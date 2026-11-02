@@ -1,208 +1,317 @@
 @extends('admin.master')
 
-@section('title', 'Overview')
+@section('title', 'Engineering overview')
+
+@push('css')
+    <style>
+        .admin-hero { background: linear-gradient(118deg, #14231e 0%, #1b332b 62%, #254337 100%); border-radius: 1.25rem; color: #fff; overflow: hidden; padding: 2rem; position: relative; }
+        .admin-hero::after { background-image: linear-gradient(rgb(255 255 255 / 5%) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 5%) 1px, transparent 1px); background-size: 32px 32px; content: ""; inset: 0 0 0 45%; mask-image: linear-gradient(90deg, transparent, #000); pointer-events: none; position: absolute; }
+        .admin-hero-content { position: relative; z-index: 1; }
+        .admin-hero-kicker { color: var(--app-green); font-size: .6875rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+        .admin-hero-copy { color: rgb(255 255 255 / 65%); max-width: 35rem; }
+        .admin-live-pill, .admin-monitoring-pill { align-items: center; border-radius: 999px; display: inline-flex; gap: .5rem; padding: .5rem .75rem; }
+        .admin-live-pill { background: rgb(255 255 255 / 8%); border: 1px solid rgb(255 255 255 / 12%); color: #fff; }
+        .admin-monitoring-pill { background: #f0f5e9; color: #5e7848; }
+        .admin-live-dot { background: var(--app-green); border-radius: 50%; box-shadow: 0 0 0 .25rem rgb(196 240 107 / 14%); height: .5rem; width: .5rem; }
+        .admin-hero-stat { border-left: 1px solid rgb(255 255 255 / 16%); padding-left: 1rem; }
+        .admin-hero-stat-value { color: var(--app-green); font-size: 1.5rem; font-weight: 600; }
+        .admin-hero-stat-label { color: rgb(255 255 255 / 56%); font-size: .75rem; }
+        .admin-subtle { color: #929a94; }
+        .admin-card-title { font-size: 1rem; font-weight: 600; }
+        .admin-metric-value { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; }
+        .admin-icon-tile { align-items: center; border-radius: .75rem; display: inline-flex; height: 2.25rem; justify-content: center; width: 2.25rem; }
+        .admin-icon-tile svg { height: 1.125rem; width: 1.125rem; }
+        .admin-icon-green { background: #f0f5e9; color: #6b8c4c; }
+        .admin-icon-orange { background: #fdf2e9; color: #ca8753; }
+        .admin-icon-purple { background: #eff1fb; color: #7479b4; }
+        .admin-icon-pink { background: #faedf1; color: #bd728a; }
+        .admin-positive { color: #65864b; font-size: .75rem; font-weight: 600; }
+        .admin-demo-badge { background: #f0f3e9; color: #647b4f; font-size: .625rem; letter-spacing: .12em; }
+        .admin-period { background: #fff; border: 1px solid #e6eae3; border-radius: .75rem; color: #515d55; padding: .625rem .875rem; }
+        .admin-chart { height: 196px; }
+        .admin-chart-grid { background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(25% - 1px), #edf0eb calc(25% - 1px), #edf0eb 25%); bottom: 1.5rem; left: 0; position: absolute; right: 0; top: 0; }
+        .admin-chart-bar { background: #e6efd9; border-radius: .375rem .375rem 0 0; display: block; width: 100%; }
+        .admin-chart-bar.current { background: #9abd69; }
+        .admin-portfolio-progress { background: #edf1e9; border-radius: 999px; height: .5rem; overflow: hidden; }
+        .admin-portfolio-progress span { background: #92b668; border-radius: inherit; display: block; height: 100%; }
+        .admin-fleet-row + .admin-fleet-row { border-top: 1px solid #eff1ed; }
+        .admin-fleet-icon { align-items: center; background: #f0f5e9; border-radius: .75rem; color: #6b8c4c; display: inline-flex; flex: 0 0 2.5rem; height: 2.5rem; justify-content: center; }
+        .admin-fleet-icon svg { height: 1.25rem; width: 1.25rem; }
+        .admin-service-icon { align-items: center; border-radius: .75rem; display: inline-flex; flex: 0 0 3rem; height: 3rem; justify-content: center; }
+        .admin-service-icon svg { height: 1.75rem; width: 1.75rem; }
+        .admin-service-one { background: #f0f5e9; color: #6b8c4c; }
+        .admin-service-two { background: #eff1fb; color: #7479b4; }
+        .admin-service-three { background: #e9edf0; color: #57636c; }
+        .admin-table-heading { background: #fafbf9; color: #929a94; font-size: .625rem; letter-spacing: .12em; }
+        .admin-status { font-size: .75rem; font-weight: 500; }
+        .admin-status-processing { background: #fdf3e3; color: #a87a31; }
+        .admin-status-shipped, .admin-status-delivered { background: #eaf4e8; color: #628251; }
+
+        @media (max-width: 575.98px) {
+            .admin-metric-value { font-size: 1.6rem; }
+        }
+    </style>
+@endpush
 
 @section('content')
-    <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-            <div class="flex flex-wrap items-center gap-2">
-                <h1 class="text-2xl font-semibold tracking-tight text-[#18231f] sm:text-[30px]">Good morning, {{ auth()->user()->name }}</h1>
-                <span class="rounded-full bg-[#f0f3e9] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#647b4f]">Demo data</span>
+    <section class="admin-hero mb-4" aria-labelledby="dashboard-title">
+        <div class="admin-hero-content row align-items-center g-4">
+            <div class="col-12 col-xl-7">
+                <div class="admin-hero-kicker mb-2">GoTee engineering console</div>
+                <h1 id="dashboard-title" class="display-6 fw-semibold mb-2">Good morning, {{ auth()->user()->name }}</h1>
+                <p class="admin-hero-copy mb-3">One view across the software, embedded hardware, IoT deployments, and production systems we build and support.</p>
+                <span class="admin-live-pill small"><span class="admin-live-dot"></span> Operations snapshot <span class="text-white-50">·</span> {{ now()->format('M j, Y') }}</span>
             </div>
-            <p class="mt-2 text-sm text-[#808a83]">Here’s what’s happening with your store today.</p>
+            <div class="col-12 col-xl-5">
+                <div class="row g-3">
+                    <div class="col-4">
+                        <div class="admin-hero-stat">
+                            <div class="admin-hero-stat-value">24</div>
+                            <div class="admin-hero-stat-label">Projects</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="admin-hero-stat">
+                            <div class="admin-hero-stat-value">486</div>
+                            <div class="admin-hero-stat-label">Devices online</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="admin-hero-stat">
+                            <div class="admin-hero-stat-value">98.6%</div>
+                            <div class="admin-hero-stat-label">System uptime</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-hero-stat mt-4">
+                    <div class="d-flex justify-content-between small mb-2">
+                        <span class="text-white-50">Fleet connectivity</span>
+                        <span class="text-white">486 / 512 devices</span>
+                    </div>
+                    <div class="progress bg-white bg-opacity-10" style="height: 6px" role="progressbar" aria-label="Fleet connectivity" aria-valuenow="94.9" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 94.9%; background: var(--app-green)"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="flex w-fit items-center gap-2 rounded-xl border border-[#e6eae3] bg-white px-3.5 py-2.5 text-sm font-medium text-[#515d55]">
-            <svg class="h-4 w-4 text-[#89928c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4m9-4v4M3.5 10h17"/></svg>
-            {{ now()->format('F Y') }}
-            <svg class="ml-1 h-4 w-4 text-[#89928c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+    </section>
+
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+        <div>
+            <h2 class="h5 fw-semibold mb-1">Operations at a glance</h2>
+            <p class="admin-muted small mb-0">Key delivery and service indicators <span class="badge rounded-pill admin-demo-badge ms-1">Demo data</span></p>
         </div>
+        <span class="admin-muted small">{{ now()->format('F Y') }}</span>
     </div>
 
-    <section class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Store performance">
-        <article class="rounded-2xl border border-[#e9ece6] bg-white p-5 sm:p-6">
-            <div class="flex items-start justify-between">
-                <span class="text-sm font-medium text-[#737e76]">Gross sales</span>
-                <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#f0f5e9] text-[#6b8c4c]">
-                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 2v20m5-15H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </span>
-            </div>
-            <div class="mt-4 flex items-baseline gap-2">
-                <span class="text-[28px] font-semibold tracking-tight">$48,290</span>
-                <span class="text-xs font-semibold text-[#65864b]">+12.8%</span>
-            </div>
-            <p class="mt-1 text-xs text-[#9aa19c]">vs. previous month</p>
-        </article>
-        <article class="rounded-2xl border border-[#e9ece6] bg-white p-5 sm:p-6">
-            <div class="flex items-start justify-between">
-                <span class="text-sm font-medium text-[#737e76]">Orders</span>
-                <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#fdf2e9] text-[#ca8753]">
-                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 7.5h16v13H4z"/><path d="M8 7.5V5h8v2.5M4 12h16"/></svg>
-                </span>
-            </div>
-            <div class="mt-4 flex items-baseline gap-2">
-                <span class="text-[28px] font-semibold tracking-tight">1,284</span>
-                <span class="text-xs font-semibold text-[#65864b]">+8.2%</span>
-            </div>
-            <p class="mt-1 text-xs text-[#9aa19c]">vs. previous month</p>
-        </article>
-        <article class="rounded-2xl border border-[#e9ece6] bg-white p-5 sm:p-6">
-            <div class="flex items-start justify-between">
-                <span class="text-sm font-medium text-[#737e76]">Average order value</span>
-                <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#eff1fb] text-[#7479b4]">
-                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 18V6m0 12h16M8 14l3-3 3 2 5-6"/></svg>
-                </span>
-            </div>
-            <div class="mt-4 flex items-baseline gap-2">
-                <span class="text-[28px] font-semibold tracking-tight">$37.61</span>
-                <span class="text-xs font-semibold text-[#65864b]">+4.1%</span>
-            </div>
-            <p class="mt-1 text-xs text-[#9aa19c]">vs. previous month</p>
-        </article>
-        <article class="rounded-2xl border border-[#e9ece6] bg-white p-5 sm:p-6">
-            <div class="flex items-start justify-between">
-                <span class="text-sm font-medium text-[#737e76]">Returning customers</span>
-                <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#faedf1] text-[#bd728a]">
-                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M3 20v-1.5A4.5 4.5 0 0 1 7.5 14h3a4.5 4.5 0 0 1 4.5 4.5V20m.2-12a3.5 3.5 0 0 1 2.8 5.5"/></svg>
-                </span>
-            </div>
-            <div class="mt-4 flex items-baseline gap-2">
-                <span class="text-[28px] font-semibold tracking-tight">32.8%</span>
-                <span class="text-xs font-semibold text-[#65864b]">+2.6%</span>
-            </div>
-            <p class="mt-1 text-xs text-[#9aa19c]">vs. previous month</p>
-        </article>
-    </section>
-
-    <section class="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(280px,0.9fr)]" aria-label="Sales and products">
-        <article class="rounded-2xl border border-[#e9ece6] bg-white p-5 sm:p-6">
-            <div class="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h2 class="text-base font-semibold">Sales overview</h2>
-                    <p class="mt-1 text-xs text-[#929a94]">Your revenue performance this week</p>
-                </div>
-                <div class="flex items-center gap-2 text-xs text-[#737e76]">
-                    <span class="h-2 w-2 rounded-full bg-[#97bd61]"></span>
-                    Revenue
-                </div>
-            </div>
-            <div class="mt-7 grid grid-cols-[32px_1fr] gap-3">
-                <div class="flex h-[196px] flex-col justify-between pb-6 text-[10px] text-[#a2aaa4]" aria-hidden="true">
-                    <span>$8k</span><span>$6k</span><span>$4k</span><span>$2k</span><span>$0</span>
-                </div>
-                <div class="relative">
-                    <div class="absolute inset-0 mb-6 flex flex-col justify-between" aria-hidden="true">
-                        <span class="border-t border-dashed border-[#edf0eb]"></span>
-                        <span class="border-t border-dashed border-[#edf0eb]"></span>
-                        <span class="border-t border-dashed border-[#edf0eb]"></span>
-                        <span class="border-t border-dashed border-[#edf0eb]"></span>
-                        <span class="border-t border-dashed border-[#edf0eb]"></span>
-                    </div>
-                    <div class="relative flex h-[196px] items-end justify-around gap-3 px-2">
-                        <div class="flex h-full flex-1 items-end"><span class="w-full rounded-t-md bg-[#e6efd9]" style="height: 48%"></span></div>
-                        <div class="flex h-full flex-1 items-end"><span class="w-full rounded-t-md bg-[#e6efd9]" style="height: 67%"></span></div>
-                        <div class="flex h-full flex-1 items-end"><span class="w-full rounded-t-md bg-[#e6efd9]" style="height: 57%"></span></div>
-                        <div class="flex h-full flex-1 items-end"><span class="w-full rounded-t-md bg-[#e6efd9]" style="height: 82%"></span></div>
-                        <div class="flex h-full flex-1 items-end"><span class="w-full rounded-t-md bg-[#e6efd9]" style="height: 63%"></span></div>
-                        <div class="flex h-full flex-1 items-end"><span class="w-full rounded-t-md bg-[#e6efd9]" style="height: 94%"></span></div>
-                        <div class="flex h-full flex-1 items-end"><span class="w-full rounded-t-md bg-[#9abd69]" style="height: 76%"></span></div>
-                    </div>
-                    <div class="mt-3 flex justify-around text-[10px] text-[#9aa19c]">
-                        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-                    </div>
-                </div>
-            </div>
-        </article>
-
-        <article class="rounded-2xl border border-[#e9ece6] bg-white p-5 sm:p-6">
-            <div class="flex items-start justify-between">
-                <div>
-                    <h2 class="text-base font-semibold">Top products</h2>
-                    <p class="mt-1 text-xs text-[#929a94]">Best sellers this month</p>
-                </div>
-                <span class="rounded-lg bg-[#f5f7f2] px-2.5 py-1.5 text-[11px] font-medium text-[#75806f]">Top 3</span>
-            </div>
-            <div class="mt-5 flex flex-col divide-y divide-[#eff1ed]">
-                <div class="flex items-center gap-3 py-3 first:pt-0">
-                    <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[#f2f0eb] text-[#64665a]">
-                        <svg class="h-8 w-8" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="m13 8 7 3 7-3 7 5-4 6-4-2v15H14V17l-4 2-4-6 7-5Z" fill="currentColor" opacity=".8"/><path d="m13 8 7 3 7-3" stroke="white" stroke-width="1.5"/></svg>
+    <section class="row g-3 g-xl-4 mb-4" aria-label="Company operations">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="admin-card h-100 p-4">
+                <div class="d-flex align-items-start justify-content-between">
+                    <span class="text-secondary small fw-medium">Active projects</span>
+                    <span class="admin-icon-tile admin-icon-green">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6m-6 4h8"/></svg>
                     </span>
-                    <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium">Everyday Cotton Tee</p>
-                        <p class="mt-1 text-xs text-[#929a94]">142 sold</p>
-                    </div>
-                    <span class="text-sm font-semibold">$2,840</span>
                 </div>
-                <div class="flex items-center gap-3 py-3">
-                    <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[#e9edf0] text-[#57636c]">
-                        <svg class="h-8 w-8" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="m13 8 7 3 7-3 7 5-4 6-4-2v15H14V17l-4 2-4-6 7-5Z" fill="currentColor" opacity=".8"/><path d="m13 8 7 3 7-3" stroke="white" stroke-width="1.5"/></svg>
-                    </span>
-                    <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium">Heavyweight Crewneck</p>
-                        <p class="mt-1 text-xs text-[#929a94]">86 sold</p>
-                    </div>
-                    <span class="text-sm font-semibold">$2,408</span>
+                <div class="d-flex align-items-baseline gap-2 mt-3">
+                    <span class="admin-metric-value">24</span>
+                    <span class="admin-positive">+3 this month</span>
                 </div>
-                <div class="flex items-center gap-3 py-3 last:pb-0">
-                    <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[#f4ece6] text-[#936e59]">
-                        <svg class="h-8 w-8" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="m13 8 7 3 7-3 7 5-4 6-4-2v15H14V17l-4 2-4-6 7-5Z" fill="currentColor" opacity=".8"/><path d="m13 8 7 3 7-3" stroke="white" stroke-width="1.5"/></svg>
-                    </span>
-                    <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium">Weekend Tote</p>
-                        <p class="mt-1 text-xs text-[#929a94]">64 sold</p>
-                    </div>
-                    <span class="text-sm font-semibold">$1,216</span>
-                </div>
-            </div>
-        </article>
-    </section>
-
-    <section class="mt-5 rounded-2xl border border-[#e9ece6] bg-white" aria-labelledby="recent-orders-title">
-        <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-5 sm:px-6">
-            <div>
-                <h2 id="recent-orders-title" class="text-base font-semibold">Recent orders</h2>
-                <p class="mt-1 text-xs text-[#929a94]">A quick look at your latest sales</p>
-            </div>
-            <span class="rounded-full bg-[#f0f3e9] px-3 py-1.5 text-xs font-medium text-[#647b4f]">8 need fulfillment</span>
+                <p class="admin-subtle small mb-0">Across 18 active client accounts</p>
+            </article>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full min-w-[680px] text-left">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="admin-card h-100 p-4">
+                <div class="d-flex align-items-start justify-content-between">
+                    <span class="text-secondary small fw-medium">In delivery</span>
+                    <span class="admin-icon-tile admin-icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 19V5m0 14h16M8 16V9m4 7V5m4 11v-4m4 4V7"/></svg>
+                    </span>
+                </div>
+                <div class="d-flex align-items-baseline gap-2 mt-3">
+                    <span class="admin-metric-value">7</span>
+                    <span class="admin-positive">2 milestones due</span>
+                </div>
+                <p class="admin-subtle small mb-0">Projects in build, test, or deployment</p>
+            </article>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="admin-card h-100 p-4">
+                <div class="d-flex align-items-start justify-content-between">
+                    <span class="text-secondary small fw-medium">IoT devices online</span>
+                    <span class="admin-icon-tile admin-icon-purple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 2v3m6-3v3M9 19v3m6-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3M10 10h4v4h-4z"/></svg>
+                    </span>
+                </div>
+                <div class="d-flex align-items-baseline gap-2 mt-3">
+                    <span class="admin-metric-value">486<span class="fs-6 fw-normal text-secondary">/512</span></span>
+                    <span class="admin-positive">94.9%</span>
+                </div>
+                <p class="admin-subtle small mb-0">26 devices require a connection check</p>
+            </article>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="admin-card h-100 p-4">
+                <div class="d-flex align-items-start justify-content-between">
+                    <span class="text-secondary small fw-medium">Production uptime</span>
+                    <span class="admin-icon-tile admin-icon-pink">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/><path d="M3 5v14h18"/></svg>
+                    </span>
+                </div>
+                <div class="d-flex align-items-baseline gap-2 mt-3">
+                    <span class="admin-metric-value">98.6%</span>
+                    <span class="admin-positive">+0.4%</span>
+                </div>
+                <p class="admin-subtle small mb-0">Across monitored production systems</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="row g-3 g-xl-4 mb-4" aria-label="Project portfolio and IoT fleet">
+        <div class="col-12 col-xl-7">
+            <article class="admin-card h-100 p-4">
+                <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+                    <div>
+                        <h2 id="project-portfolio-title" class="admin-card-title mb-1">Project portfolio</h2>
+                        <p class="admin-subtle small mb-0">Active work by engineering discipline</p>
+                    </div>
+                    <span class="badge rounded-pill admin-demo-badge px-3 py-2">24 total</span>
+                </div>
+                <div class="d-flex flex-column gap-4 mt-4">
+                    <div>
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="fw-medium">Software &amp; production systems</span>
+                            <span class="admin-subtle">9 projects</span>
+                        </div>
+                        <div class="admin-portfolio-progress" role="progressbar" aria-label="Software and production system projects" aria-valuenow="37.5" aria-valuemin="0" aria-valuemax="100"><span style="width: 37.5%"></span></div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="fw-medium">IoT &amp; connected devices</span>
+                            <span class="admin-subtle">6 projects</span>
+                        </div>
+                        <div class="admin-portfolio-progress" role="progressbar" aria-label="IoT projects" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span style="width: 25%"></span></div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="fw-medium">Embedded systems</span>
+                            <span class="admin-subtle">5 projects</span>
+                        </div>
+                        <div class="admin-portfolio-progress" role="progressbar" aria-label="Embedded systems projects" aria-valuenow="20.8" aria-valuemin="0" aria-valuemax="100"><span style="width: 20.8%"></span></div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="fw-medium">Hardware design &amp; integration</span>
+                            <span class="admin-subtle">4 projects</span>
+                        </div>
+                        <div class="admin-portfolio-progress" role="progressbar" aria-label="Hardware projects" aria-valuenow="16.7" aria-valuemin="0" aria-valuemax="100"><span style="width: 16.7%"></span></div>
+                    </div>
+                </div>
+                <div class="admin-subtle border-top mt-4 pt-3" style="font-size: .75rem">Project mix spans connected hardware through production-ready software.</div>
+            </article>
+        </div>
+
+        <div class="col-12 col-xl-5">
+            <article class="admin-card h-100 p-4">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <h2 id="connected-fleet-title" class="admin-card-title mb-1">Connected fleet</h2>
+                        <p class="admin-subtle small mb-0">Device status across client deployments</p>
+                    </div>
+                    <span class="admin-monitoring-pill small"><span class="admin-live-dot"></span> Monitoring</span>
+                </div>
+                <div class="mt-3">
+                    <div class="admin-fleet-row d-flex align-items-center gap-3 py-3">
+                        <span class="admin-fleet-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 21V8l9-5 9 5v13M3 10h18M8 21v-6h8v6m-4-12v2"/></svg>
+                        </span>
+                        <div class="admin-min-width-0 flex-grow-1">
+                            <div class="small fw-medium">Northstar plant</div>
+                            <div class="admin-subtle" style="font-size: .75rem">Production monitoring</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="small fw-semibold">218 / 220</div>
+                            <div class="admin-positive">99.1% online</div>
+                        </div>
+                    </div>
+                    <div class="admin-fleet-row d-flex align-items-center gap-3 py-3">
+                        <span class="admin-fleet-icon" style="background: #eff1fb; color: #7479b4">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 18V8l7-4 7 4v10l-7 4-7-4Z"/><path d="m5 8 7 4 7-4m-7 4v10m-3-12 6-4"/></svg>
+                        </span>
+                        <div class="admin-min-width-0 flex-grow-1">
+                            <div class="small fw-medium">FreshRoute cold chain</div>
+                            <div class="admin-subtle" style="font-size: .75rem">Temperature sensors</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="small fw-semibold">164 / 176</div>
+                            <div class="admin-positive">93.2% online</div>
+                        </div>
+                    </div>
+                    <div class="admin-fleet-row d-flex align-items-center gap-3 py-3">
+                        <span class="admin-fleet-icon" style="background: #fdf2e9; color: #ca8753">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 2v3m6-3v3M9 19v3m6-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3"/></svg>
+                        </span>
+                        <div class="admin-min-width-0 flex-grow-1">
+                            <div class="small fw-medium">Apex machine network</div>
+                            <div class="admin-subtle" style="font-size: .75rem">Edge gateways &amp; controllers</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="small fw-semibold">104 / 116</div>
+                            <div class="admin-positive">89.7% online</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="admin-card" aria-labelledby="active-projects-title">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 p-4">
+            <div>
+                <h2 id="delivery-tracker-title" class="admin-card-title mb-1">Delivery tracker</h2>
+                <p class="admin-subtle small mb-0">Project milestones across software and hardware engagements</p>
+            </div>
+            <span class="badge rounded-pill admin-demo-badge px-3 py-2">2 milestones due soon</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
                 <thead>
-                    <tr class="border-y border-[#eff1ed] bg-[#fafbf9] text-[10px] font-semibold uppercase tracking-[0.12em] text-[#929a94]">
-                        <th class="px-6 py-3 font-semibold">Order</th>
-                        <th class="px-4 py-3 font-semibold">Customer</th>
-                        <th class="px-4 py-3 font-semibold">Date</th>
-                        <th class="px-4 py-3 font-semibold">Status</th>
-                        <th class="px-6 py-3 text-right font-semibold">Total</th>
+                    <tr class="admin-table-heading text-uppercase">
+                        <th class="px-4 py-3 fw-semibold ps-lg-4">Project</th>
+                        <th class="px-3 py-3 fw-semibold">Client</th>
+                        <th class="px-3 py-3 fw-semibold">Discipline</th>
+                        <th class="px-3 py-3 fw-semibold">Delivery status</th>
+                        <th class="px-4 py-3 fw-semibold text-end pe-lg-4">Next milestone</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-[#eff1ed] text-sm">
+                <tbody class="small">
                     <tr>
-                        <td class="whitespace-nowrap px-6 py-4 font-medium">#GT-1048</td>
-                        <td class="whitespace-nowrap px-4 py-4 text-[#657168]">Olivia Martin</td>
-                        <td class="whitespace-nowrap px-4 py-4 text-[#929a94]">Today, 10:42 am</td>
-                        <td class="whitespace-nowrap px-4 py-4"><span class="rounded-full bg-[#fdf3e3] px-2.5 py-1 text-xs font-medium text-[#a87a31]">Processing</span></td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right font-medium">$84.00</td>
+                        <td class="px-4 py-3 fw-medium ps-lg-4 text-nowrap">Production control system</td>
+                        <td class="px-3 py-3 text-nowrap text-secondary">Northstar Manufacturing</td>
+                        <td class="px-3 py-3 text-nowrap admin-subtle">Production software</td>
+                        <td class="px-3 py-3"><span class="badge rounded-pill admin-status admin-status-processing">Integration</span></td>
+                        <td class="px-4 py-3 text-end fw-medium pe-lg-4 text-nowrap">Nov 18, 2026</td>
                     </tr>
                     <tr>
-                        <td class="whitespace-nowrap px-6 py-4 font-medium">#GT-1047</td>
-                        <td class="whitespace-nowrap px-4 py-4 text-[#657168]">Noah Williams</td>
-                        <td class="whitespace-nowrap px-4 py-4 text-[#929a94]">Today, 9:18 am</td>
-                        <td class="whitespace-nowrap px-4 py-4"><span class="rounded-full bg-[#eaf4e8] px-2.5 py-1 text-xs font-medium text-[#628251]">Shipped</span></td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right font-medium">$42.50</td>
+                        <td class="px-4 py-3 fw-medium ps-lg-4 text-nowrap">Cold-chain sensor network</td>
+                        <td class="px-3 py-3 text-nowrap text-secondary">FreshRoute Logistics</td>
+                        <td class="px-3 py-3 text-nowrap admin-subtle">IoT &amp; embedded</td>
+                        <td class="px-3 py-3"><span class="badge rounded-pill admin-status admin-status-shipped">Field testing</span></td>
+                        <td class="px-4 py-3 text-end fw-medium pe-lg-4 text-nowrap">Nov 24, 2026</td>
                     </tr>
                     <tr>
-                        <td class="whitespace-nowrap px-6 py-4 font-medium">#GT-1046</td>
-                        <td class="whitespace-nowrap px-4 py-4 text-[#657168]">Amara Johnson</td>
-                        <td class="whitespace-nowrap px-4 py-4 text-[#929a94]">Yesterday, 4:32 pm</td>
-                        <td class="whitespace-nowrap px-4 py-4"><span class="rounded-full bg-[#fdf3e3] px-2.5 py-1 text-xs font-medium text-[#a87a31]">Processing</span></td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right font-medium">$116.00</td>
+                        <td class="px-4 py-3 fw-medium ps-lg-4 text-nowrap">Machine monitoring gateway</td>
+                        <td class="px-3 py-3 text-nowrap text-secondary">Apex Components</td>
+                        <td class="px-3 py-3 text-nowrap admin-subtle">Hardware &amp; firmware</td>
+                        <td class="px-3 py-3"><span class="badge rounded-pill admin-status admin-status-processing">Prototype</span></td>
+                        <td class="px-4 py-3 text-end fw-medium pe-lg-4 text-nowrap">Dec 02, 2026</td>
                     </tr>
                     <tr>
-                        <td class="whitespace-nowrap px-6 py-4 font-medium">#GT-1045</td>
-                        <td class="whitespace-nowrap px-4 py-4 text-[#657168]">Ethan Chen</td>
-                        <td class="whitespace-nowrap px-4 py-4 text-[#929a94]">Yesterday, 1:07 pm</td>
-                        <td class="whitespace-nowrap px-4 py-4"><span class="rounded-full bg-[#eaf4e8] px-2.5 py-1 text-xs font-medium text-[#628251]">Delivered</span></td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right font-medium">$38.00</td>
+                        <td class="px-4 py-3 fw-medium ps-lg-4 text-nowrap">Operations planning platform</td>
+                        <td class="px-3 py-3 text-nowrap text-secondary">Meridian Works</td>
+                        <td class="px-3 py-3 text-nowrap admin-subtle">Custom software</td>
+                        <td class="px-3 py-3"><span class="badge rounded-pill admin-status admin-status-delivered">On track</span></td>
+                        <td class="px-4 py-3 text-end fw-medium pe-lg-4 text-nowrap">Dec 12, 2026</td>
                     </tr>
                 </tbody>
             </table>

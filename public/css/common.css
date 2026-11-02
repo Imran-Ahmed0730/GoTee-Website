@@ -1,0 +1,76 @@
+:root {
+    --app-ink: #18231f;
+    --app-muted: #808a83;
+    --app-green: #c4f06b;
+}
+
+body {
+    background: #f7f8f5;
+    color: var(--app-ink);
+    font-family: Figtree, sans-serif;
+}
+
+.app-brand-mark {
+    align-items: center;
+    background: var(--app-green);
+    border-radius: .75rem;
+    color: #14231e;
+    display: inline-flex;
+    font-size: 1.125rem;
+    font-weight: 700;
+    height: 2.5rem;
+    justify-content: center;
+    width: 2.5rem;
+}
+
+.app-form-label {
+    color: #48544c;
+    font-size: .8125rem;
+    font-weight: 600;
+}
+
+.app-form-control {
+    border: 1px solid #dfe5dc;
+    border-radius: .625rem;
+    min-height: 42px;
+}
+
+.app-form-control:focus {
+    border-color: #9abd69;
+    box-shadow: 0 0 0 .2rem rgb(154 189 105 / 18%);
+}
+
+.app-form-button {
+    background: #14231e;
+    border: 1px solid #14231e;
+    border-radius: .625rem;
+    color: #fff;
+    font-weight: 600;
+}
+
+.app-form-button:hover,
+.app-form-button:focus {
+    background: #234135;
+    border-color: #234135;
+    color: #fff;
+}
+
+.app-form-error {
+    color: #a63d38;
+    font-size: .8125rem;
+    list-style: none;
+    margin: .375rem 0 0;
+    padding: 0;
+}
+
+.app-status {
+    background: #f0f5e9;
+    border: 1px solid #dfead2;
+    border-radius: .625rem;
+    color: #54713d;
+    padding: .75rem 1rem;
+}
+
+.app-toast .toast-body {
+    padding: 0;
+}

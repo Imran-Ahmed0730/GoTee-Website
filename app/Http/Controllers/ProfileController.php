@@ -7,7 +7,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use RuntimeException;
 
 class ProfileController extends Controller
 {
@@ -26,15 +28,39 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validated = $request->validated();
+        $oldPhotoPath = $user->profile_photo_path;
+        $newPhotoPath = null;
+        $removePhoto = $request->boolean('remove_profile_photo');
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        unset($validated['profile_photo'], $validated['remove_profile_photo']);
+
+        if ($request->hasFile('profile_photo')) {
+            $newPhotoPath = $request->file('profile_photo')->store('profile-photos', 'public');
+
+            if (! is_string($newPhotoPath)) {
+                throw new RuntimeException('Unable to store the uploaded profile photo.');
+            }
+
+            $user->profile_photo_path = $newPhotoPath;
+        } elseif ($removePhoto) {
+            $user->profile_photo_path = null;
         }
 
-        $request->user()->save();
+        $user->fill($validated);
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        if ($oldPhotoPath !== null && ($newPhotoPath !== null || $removePhoto)) {
+            Storage::disk('public')->delete($oldPhotoPath);
+        }
+
+        return Redirect::route('profile.edit')->with('success', 'profile-updated');
     }
 
     /**
@@ -49,6 +75,10 @@ class ProfileController extends Controller
         $user = $request->user();
 
         Auth::logout();
+
+        if ($user->profile_photo_path !== null) {
+            Storage::disk('public')->delete($user->profile_photo_path);
+        }
 
         $user->delete();
 

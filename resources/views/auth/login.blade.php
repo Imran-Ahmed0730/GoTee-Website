@@ -1,57 +1,45 @@
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    @section('title', 'Sign in')
+
+    <div class="mb-4">
+        <div class="auth-kicker">Welcome back</div>
+        <h1 class="auth-heading mt-2 mb-2">Sign in to GoTee</h1>
+        <p class="auth-description mb-0">Access your engineering projects and connected operations.</p>
+    </div>
+
+    <x-auth-session-status class="app-status auth-status mb-3" :status="session('status')" />
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="mb-3">
+            <label for="email" class="form-label app-form-label auth-label">{{ __('Email address') }}</label>
+            <input id="email" class="form-control app-form-control auth-input" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
+            <x-input-error :messages="$errors->get('email')" class="app-form-error auth-errors" />
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="mb-3">
+            <label for="password" class="form-label app-form-label auth-label">{{ __('Password') }}</label>
+            <input id="password" class="form-control app-form-control auth-input" type="password" name="password" required autocomplete="current-password">
+            <x-input-error :messages="$errors->get('password')" class="app-form-error auth-errors" />
         </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+            <label for="remember_me" class="d-inline-flex align-items-center gap-2 text-secondary small">
+                <input id="remember_me" type="checkbox" class="form-check-input auth-check m-0" name="remember">
+                <span>{{ __('Remember me') }}</span>
             </label>
+            @if (Route::has('password.request'))
+                <a class="auth-link" href="{{ route('password.request') }}">{{ __('Forgot password?') }}</a>
+            @endif
         </div>
 
-        <div class="flex items-center justify-between mt-4">
-            <div class="text-sm">
-                @if (Route::has('password.request'))
-                    <a class="underline text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif
-            </div>
-
-            <x-primary-button>
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="btn app-form-button auth-button w-100">{{ __('Sign in') }}</button>
 
         @if (Route::has('register'))
-            <p class="mt-6 text-sm text-center text-gray-600">
+            <p class="text-center text-secondary small mb-0 mt-4">
                 {{ __("Don't have an account?") }}
-                <a class="underline hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('register') }}">
-                    {{ __('Register') }}
-                </a>
+                <a class="auth-link" href="{{ route('register') }}">{{ __('Create account') }}</a>
             </p>
         @endif
     </form>

@@ -1,29 +1,90 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
-        </div>
+@extends('admin.master')
+@section('title', 'Profile Settings')
+@push('css')
+    <style>
+        .profile-shell { margin: 0 auto; max-width: 1000px; padding: 2.5rem 1.5rem; }
+        .profile-avatar { align-items: center; background: #e7eedc; border-radius: 50%; color: #49633a; display: inline-flex; flex: 0 0 5.25rem; font-size: 1.5rem; font-weight: 600; height: 5.25rem; justify-content: center; object-fit: cover; width: 5.25rem; }
+        @media (max-width: 575.98px) {
+            .profile-shell { padding: 1.5rem 1rem; }
+        }
+    </style>
+@endpush
+@section('content')
+    <div class="mb-4">
+        <div class="text-uppercase fw-semibold" style="color: #6b8c4c; font-size: .6875rem; letter-spacing: .16em">Account</div>
+        <h1 class="h2 fw-semibold mt-2 mb-1">Profile settings</h1>
+        <p class="admin-muted mb-0">Manage your GoTee account, sign-in details, and profile photo.</p>
     </div>
-</x-app-layout>
+
+    <div class="d-flex flex-column gap-4">
+        <section class="admin-card p-4 p-md-5" aria-labelledby="profile-information-title">
+            @include('profile.partials.update-profile-information-form', ['user' => $user])
+        </section>
+
+        <section class="admin-card p-4 p-md-5" aria-labelledby="update-password-title">
+            @include('profile.partials.update-password-form')
+        </section>
+
+        <section class="admin-card p-4 p-md-5" aria-labelledby="delete-account-title">
+            @include('profile.partials.delete-user-form')
+        </section>
+    </div>
+@endsection
+@push('js')
+    <script>
+        const $photoInput = $('#profile_photo');
+        const $photoPreview = $('#profile-photo-preview');
+        const $photoFallback = $('#profile-photo-fallback');
+        const $removePhoto = $('#remove_profile_photo');
+
+        $photoInput.on('change', function () {
+            const file = this.files[0];
+
+            if (file) {
+                $photoPreview.attr('src', URL.createObjectURL(file)).removeClass('d-none');
+                $photoFallback.addClass('d-none');
+                $removePhoto.prop('checked', false);
+            }
+        });
+
+        $removePhoto.on('change', function () {
+            if (this.checked && $photoInput[0].files.length === 0) {
+                $photoPreview.addClass('d-none');
+                $photoFallback.removeClass('d-none');
+            } else if ($photoPreview.attr('src')) {
+                $photoPreview.removeClass('d-none');
+                $photoFallback.addClass('d-none');
+            }
+        });
+
+        $(document).on('submit', 'form[data-confirm]', function (event) {
+            const form = this;
+
+            if (form.dataset.confirmed === 'true') {
+                delete form.dataset.confirmed;
+                return;
+            }
+
+            event.preventDefault();
+
+            Swal.fire({
+                title: form.dataset.confirmTitle || 'Are you sure?',
+                text: form.dataset.confirmText || 'This action cannot be undone.',
+                icon: form.dataset.confirmIcon || 'warning',
+                showCancelButton: true,
+                reverseButtons: true,
+                focusCancel: true,
+                confirmButtonText: form.dataset.confirmButton || 'Confirm',
+                cancelButtonText: form.dataset.cancelButton || 'Cancel',
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.dataset.confirmed = 'true';
+                    form.requestSubmit();
+                }
+            });
+        });
+
+    </script>
+@endpush

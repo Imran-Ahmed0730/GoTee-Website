@@ -1,39 +1,36 @@
 <x-guest-layout>
+    @section('title', 'Choose a new password')
+
+    <div class="mb-4">
+        <div class="auth-kicker">Account recovery</div>
+        <h1 class="auth-heading mt-2 mb-2">{{ __('Choose a new password') }}</h1>
+        <p class="auth-description mb-0">{{ __('Create a new password to securely access your GoTee account.') }}</p>
+    </div>
+
+    <x-auth-session-status class="app-status auth-status mb-3" :status="session('status')" />
+
     <form method="POST" action="{{ route('password.store') }}">
         @csrf
-
-        <!-- Password Reset Token -->
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="mb-3">
+            <label for="email" class="form-label app-form-label auth-label">{{ __('Email address') }}</label>
+            <input id="email" class="form-control app-form-control auth-input" type="email" name="email" value="{{ old('email', $request->email) }}" required autofocus autocomplete="username">
+            <x-input-error :messages="$errors->get('email')" class="app-form-error auth-errors" />
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="mb-3">
+            <label for="password" class="form-label app-form-label auth-label">{{ __('New password') }}</label>
+            <input id="password" class="form-control app-form-control auth-input" type="password" name="password" required autocomplete="new-password">
+            <x-input-error :messages="$errors->get('password')" class="app-form-error auth-errors" />
         </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        <div class="mb-4">
+            <label for="password_confirmation" class="form-label app-form-label auth-label">{{ __('Confirm new password') }}</label>
+            <input id="password_confirmation" class="form-control app-form-control auth-input" type="password" name="password_confirmation" required autocomplete="new-password">
+            <x-input-error :messages="$errors->get('password_confirmation')" class="app-form-error auth-errors" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="btn app-form-button auth-button w-100">{{ __('Reset password') }}</button>
     </form>
 </x-guest-layout>
