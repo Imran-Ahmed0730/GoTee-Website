@@ -18,9 +18,12 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get('/profile');
+            ->get('/admin/profile');
 
-        $response->assertOk();
+        $response
+            ->assertOk()
+            ->assertSee('aria-label="Breadcrumb"', false)
+            ->assertSee('Profile settings');
     }
 
     public function test_profile_page_displays_the_saved_profile_photo(): void
@@ -33,7 +36,7 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get('/profile');
+            ->get('/admin/profile');
 
         $response
             ->assertOk()
@@ -46,7 +49,7 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
+            ->patch('/admin/profile', [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
             ]);
@@ -54,7 +57,7 @@ class ProfileTest extends TestCase
         $response
             ->assertSessionHasNoErrors()
             ->assertSessionHas('success', 'profile-updated')
-            ->assertRedirect('/profile');
+            ->assertRedirect('/admin/profile');
 
         $user->refresh();
 
@@ -69,14 +72,14 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
+            ->patch('/admin/profile', [
                 'name' => 'Test User',
                 'email' => $user->email,
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect('/admin/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
@@ -91,7 +94,7 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
+            ->patch('/admin/profile', [
                 'name' => $user->name,
                 'email' => $user->email,
                 'profile_photo' => UploadedFile::fake()->createWithContent(
@@ -102,7 +105,7 @@ class ProfileTest extends TestCase
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect('/admin/profile');
 
         $user->refresh();
 
@@ -121,7 +124,7 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
+            ->patch('/admin/profile', [
                 'name' => $user->name,
                 'email' => $user->email,
                 'remove_profile_photo' => '1',
@@ -129,7 +132,7 @@ class ProfileTest extends TestCase
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect('/admin/profile');
 
         $this->assertNull($user->refresh()->profile_photo_path);
         Storage::disk('public')->assertMissing('profile-photos/photo.jpg');
@@ -145,8 +148,8 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->from('/profile')
-            ->patch('/profile', [
+            ->from('/admin/profile')
+            ->patch('/admin/profile', [
                 'name' => $user->name,
                 'email' => $user->email,
                 'profile_photo' => UploadedFile::fake()->create('not-an-image.txt', 10, 'text/plain'),
@@ -154,7 +157,7 @@ class ProfileTest extends TestCase
 
         $response
             ->assertSessionHasErrors('profile_photo')
-            ->assertRedirect('/profile');
+            ->assertRedirect('/admin/profile');
 
         $this->assertSame('profile-photos/current.jpg', $user->refresh()->profile_photo_path);
         Storage::disk('public')->assertExists('profile-photos/current.jpg');
@@ -170,7 +173,7 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->delete('/profile', [
+            ->delete('/admin/profile', [
                 'password' => 'password',
             ]);
 
@@ -189,14 +192,14 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
+            ->from('/admin/profile')
+            ->delete('/admin/profile', [
                 'password' => 'wrong-password',
             ]);
 
         $response
             ->assertSessionHasErrorsIn('userDeletion', 'password')
-            ->assertRedirect('/profile');
+            ->assertRedirect('/admin/profile');
 
         $this->assertNotNull($user->fresh());
     }

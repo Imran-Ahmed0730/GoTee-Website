@@ -1,5 +1,5 @@
 <aside id="admin-sidebar" class="admin-sidebar flex-shrink-0" aria-label="Main navigation">
-    <a href="{{ route('dashboard') }}" class="admin-brand d-flex align-items-center gap-3 px-2 pb-2">
+    <a href="{{ route('admin.dashboard') }}" class="admin-brand d-flex align-items-center gap-3 px-2 pb-2">
         <span class="app-brand-mark">G</span>
         <span class="admin-brand-copy">
                 <span class="d-block fs-5 fw-semibold">GoTee</span>
@@ -8,10 +8,58 @@
 
     <div class="admin-nav-label">Projects</div>
     <nav class="d-flex flex-column gap-1" aria-label="Main navigation">
-        <a href="{{ route('dashboard') }}" aria-label="Overview" title="Overview" aria-current="page" class="admin-nav-link active">
+        <a href="{{ route('admin.dashboard') }}" aria-label="Overview" title="Overview" aria-current="page" class="admin-nav-link active">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
             <span class="admin-nav-text">Overview</span>
         </a>
+        @canany(['Blog View', 'Blog Category View'])
+            <div class="admin-nav-label mt-3">Blog</div>
+            @can('Blog View')
+                <a href="{{ route('admin.blog.index') }}" class="admin-nav-link {{ request()->routeIs('admin.blog.index', 'admin.blog.create', 'admin.blog.edit') ? 'active' : '' }}">
+                    <i class="fa-solid fa-newspaper" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Blogs</span>
+                </a>
+            @endcan
+            @can('Blog Category View')
+                <a href="{{ route('admin.blog.category.index') }}" class="admin-nav-link {{ request()->routeIs('admin.blog.category.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Blog categories</span>
+                </a>
+            @endcan
+        @endcanany
+        @canany(['FAQ View', 'FAQ Category View'])
+            <div class="admin-nav-label mt-3">FAQs</div>
+            @can('FAQ View')
+                <a href="{{ route('admin.faq.index') }}" class="admin-nav-link {{ request()->routeIs('admin.faq.index', 'admin.faq.create', 'admin.faq.edit') ? 'active' : '' }}">
+                    <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+                    <span class="admin-nav-text">FAQs</span>
+                </a>
+            @endcan
+            @can('FAQ Category View')
+                <a href="{{ route('admin.faq.category.index') }}" class="admin-nav-link {{ request()->routeIs('admin.faq.category.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+                    <span class="admin-nav-text">FAQ categories</span>
+                </a>
+            @endcan
+        @endcanany
+
+        @canany(['Role View', 'Permission View'])
+            <div class="admin-nav-label mt-3">Roles & Permissions</div>
+            @can('Role View')
+                <a href="{{ route('admin.role.index') }}" class="admin-nav-link {{ request()->routeIs('admin.role.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-user-tag" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Roles</span>
+                </a>
+            @endcan
+            @can('Permission View')
+                <a href="{{ route('admin.permission.index') }}" class="admin-nav-link {{ request()->routeIs('admin.permission.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-key" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Permissions</span>
+                </a>
+            @endcan
+        @endcanany
+
+
         <button type="button" class="admin-nav-link admin-submenu-toggle" aria-label="Software submenu" title="Software" aria-expanded="false" aria-controls="software-submenu" data-submenu-toggle>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 8h16l-1.2 12H5.2L4 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
                 <span class="admin-nav-text">Software</span>
@@ -23,7 +71,7 @@
         </div>
         <button type="button" class="admin-nav-link admin-submenu-toggle" aria-label="Active projects submenu" title="Active projects" aria-expanded="false" aria-controls="projects-submenu" data-submenu-toggle>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 7.5h16v13H4z"/><path d="M8 7.5V5h8v2.5M4 12h16"/></svg>
-                <span class="admin-nav-text">Active projects</span> <span class="badge rounded-pill ms-auto text-dark" style="background: var(--app-green)">8</span>
+                <span class="admin-nav-text">Active projects</span> <span class="badge rounded-pill admin-sidebar-badge ms-auto">8</span>
                 <svg class="admin-submenu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
         </button>
         <div id="projects-submenu" class="admin-submenu" hidden>
@@ -74,7 +122,7 @@
 
     <div class="admin-sidebar-note mt-auto">
         <div class="d-flex align-items-center gap-2 small fw-medium text-white">
-            <span class="rounded-circle" style="background: var(--app-green); height: .5rem; width: .5rem"></span>
+            <span class="admin-sidebar-status-dot rounded-circle"></span>
             Systems are looking good
         </div>
         <p class="mb-0 mt-2 small">Your connected systems and active projects are on track.</p>

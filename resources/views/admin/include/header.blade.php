@@ -19,16 +19,16 @@
             <button type="button" class="admin-profile-trigger d-flex align-items-center gap-3 text-dark" aria-label="Open profile menu" aria-controls="admin-profile-menu" aria-expanded="false">
                 <span class="d-none d-sm-block text-end">
                     <span class="d-block small fw-semibold">{{ auth()->user()->name }}</span>
-                    <span class="admin-muted d-block" style="font-size: .75rem">Administrator</span>
+                    <span class="admin-muted admin-profile-role d-block">Administrator</span>
                 </span>
                 @if (auth()->user()->profile_photo_path)
-                    <img class="admin-avatar" src="{{ Storage::disk('public')->url(auth()->user()->profile_photo_path) }}" alt="{{ auth()->user()->name }} profile photo" style="object-fit: cover">
+                    <img class="admin-avatar admin-avatar-photo" src="{{ Storage::disk('public')->url(auth()->user()->profile_photo_path) }}" alt="{{ auth()->user()->name }} profile photo">
                 @else
                     <span class="admin-avatar">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span>
                 @endif
             </button>
             <div id="admin-profile-menu" class="admin-profile-menu" hidden>
-                <a href="{{ route('profile.edit') }}">
+                <a href="{{ route('admin.profile.edit') }}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
                     Profile settings
                 </a>

@@ -3,7 +3,7 @@
     <p class="admin-muted small mb-0">{{ __('Permanently remove your account and its data. This action cannot be undone.') }}</p>
 </header>
 
-<form method="post" action="{{ route('profile.destroy') }}"
+<form method="post" action="{{ route('admin.profile.destroy') }}"
     data-confirm
     data-confirm-title="{{ __('Delete your account?') }}"
     data-confirm-text="{{ __('Your account and its data will be permanently removed.') }}"
@@ -15,7 +15,7 @@
     <div class="row align-items-end g-3">
         <div class="col-12 col-md-7">
             <label for="user-deletion-password" class="form-label app-form-label">{{ __('Confirm with your password') }}</label>
-            <input id="user-deletion-password" name="password" type="password" class="form-control app-form-control" autocomplete="current-password" required>
+            <input id="user-deletion-password" name="password" type="password" class="form-control app-form-control" placeholder="Enter your password to confirm" autocomplete="current-password" required>
             <x-input-error :messages="$errors->userDeletion->get('password')" class="app-form-error" />
         </div>
         <div class="col-12 col-md-auto">

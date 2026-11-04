@@ -46,13 +46,13 @@
             <span class="small text-white-50">© {{ now()->year }} GoTee. Technology, from edge to enterprise.</span>
             <div class="auth-grid-art" aria-hidden="true">
                 <svg viewBox="0 0 240 190" fill="none">
-                    <path d="M35 95h42l22-38h50l22 38h34M77 95l22 38h50l22-38m-67-38v76m45-76v76" stroke="#c4f06b" stroke-opacity=".62" stroke-width="1.5"/>
-                    <circle cx="35" cy="95" r="6" fill="#c4f06b"/><circle cx="77" cy="95" r="5" fill="#14231e" stroke="#c4f06b" stroke-width="2"/>
-                    <circle cx="99" cy="57" r="5" fill="#14231e" stroke="#c4f06b" stroke-width="2"/><circle cx="149" cy="57" r="5" fill="#14231e" stroke="#c4f06b" stroke-width="2"/>
-                    <circle cx="171" cy="95" r="5" fill="#14231e" stroke="#c4f06b" stroke-width="2"/><circle cx="205" cy="95" r="6" fill="#c4f06b"/>
-                    <circle cx="99" cy="133" r="5" fill="#14231e" stroke="#c4f06b" stroke-width="2"/><circle cx="149" cy="133" r="5" fill="#14231e" stroke="#c4f06b" stroke-width="2"/>
-                    <rect x="112" y="78" width="25" height="34" rx="5" fill="#c4f06b" fill-opacity=".12" stroke="#c4f06b" stroke-opacity=".75"/>
-                    <path d="M120 87h9m-9 6h9m-9 6h6" stroke="#c4f06b" stroke-width="1.5"/>
+                    <path d="M35 95h42l22-38h50l22 38h34M77 95l22 38h50l22-38m-67-38v76m45-76v76" stroke="#8bb8e8" stroke-opacity=".72" stroke-width="1.5"/>
+                    <circle cx="35" cy="95" r="6" fill="#8bb8e8"/><circle cx="77" cy="95" r="5" fill="#0b1f33" stroke="#8bb8e8" stroke-width="2"/>
+                    <circle cx="99" cy="57" r="5" fill="#0b1f33" stroke="#8bb8e8" stroke-width="2"/><circle cx="149" cy="57" r="5" fill="#0b1f33" stroke="#8bb8e8" stroke-width="2"/>
+                    <circle cx="171" cy="95" r="5" fill="#0b1f33" stroke="#8bb8e8" stroke-width="2"/><circle cx="205" cy="95" r="6" fill="#8bb8e8"/>
+                    <circle cx="99" cy="133" r="5" fill="#0b1f33" stroke="#8bb8e8" stroke-width="2"/><circle cx="149" cy="133" r="5" fill="#0b1f33" stroke="#8bb8e8" stroke-width="2"/>
+                    <rect x="112" y="78" width="25" height="34" rx="5" fill="#8bb8e8" fill-opacity=".16" stroke="#8bb8e8" stroke-opacity=".8"/>
+                    <path d="M120 87h9m-9 6h9m-9 6h6" stroke="#8bb8e8" stroke-width="1.5"/>
                 </svg>
             </div>
         </div>

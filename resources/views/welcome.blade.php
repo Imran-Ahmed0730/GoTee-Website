@@ -11,7 +11,7 @@
 </head>
 <body>
     <main class="container min-vh-100 d-flex flex-column justify-content-center py-5">
-        <div class="mx-auto" style="max-width: 44rem">
+        <div class="welcome-content mx-auto">
             <a href="{{ route('login') }}" class="navbar-brand d-inline-flex align-items-center gap-2 mb-5 text-decoration-none">
                 <span class="app-brand-mark">G</span>
                 <span class="fw-semibold text-dark">GoTee</span>

@@ -3,22 +3,103 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    toastr.options = {
-        closeButton: true,
-        newestOnTop: true,
-        positionClass: 'toast-top-right',
-        progressBar: true,
-        timeOut: 5000,
-    };
-
-    $(function () {
-        const toast = @json(session('toast'));
-
-        if (toast && toast.message && typeof toastr[toast.type] === 'function') {
-            toastr[toast.type](toast.message);
-        }
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((tooltipTriggerEl) => {
+        new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
+    if (typeof toastr !== 'undefined') {
+        toastr.options = {
+            closeButton: true,
+            newestOnTop: true,
+            positionClass: 'toast-top-right',
+            progressBar: true,
+            timeOut: 5000,
+        };
+
+        $(function () {
+            const toast = @json(session('toast'));
+            const flashMessages = {
+                success: @json(session('success')),
+                error: @json(session('error')),
+                warning: @json(session('warning')),
+                info: @json(session('info')),
+            };
+
+            if (toast && toast.message && typeof toastr[toast.type] === 'function') {
+                toastr[toast.type](toast.message);
+                return;
+            }
+
+            Object.entries(flashMessages).some(([type, message]) => {
+                if (message && typeof toastr[type] === 'function') {
+                    toastr[type](message);
+                    return true;
+                }
+
+                return false;
+            });
+        });
+    }
+
+    document.querySelectorAll('.btn-delete').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            const form = button.closest('form');
+
+            if (!form) {
+                return;
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Globally disable scroll-to-change value on ALL number inputs
+        document.addEventListener('wheel', (event) => {
+            if (document.activeElement.type === 'number') {
+                event.preventDefault();
+            }
+        }, { passive: false }); // 'passive: false' allows us to block the default scroll action
+
+        // 2. Find the element with the autofocus attribute
+        const autoFocusEl = document.querySelector('input[autofocus], textarea[autofocus]');
+
+        if (autoFocusEl) {
+            // Focus the element without triggering a page jump/scroll shift
+            autoFocusEl.focus({ preventScroll: true });
+
+            // 3. Move cursor to the end safely based on type
+            const supportedTypes = ['text', 'search', 'url', 'tel', 'password'];
+            const isTextarea = autoFocusEl.tagName.toLowerCase() === 'textarea';
+            const isSupportedInput = autoFocusEl.tagName.toLowerCase() === 'input' && supportedTypes.includes(autoFocusEl.type);
+
+            if (isTextarea || isSupportedInput) {
+                const length = autoFocusEl.value.length;
+                autoFocusEl.setSelectionRange(length, length);
+            } else {
+                // Fallback value re-assignment for number/other inputs
+                const val = autoFocusEl.value;
+                autoFocusEl.value = '';
+                autoFocusEl.value = val;
+            }
+        }
+    });
 </script>
 
 <script>
@@ -94,4 +175,54 @@
 
     desktopSidebar.addEventListener('change', () => setSidebarExpanded(false));
     setSidebarExpanded(false);
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Bind the click event to the toggle switches
+        $('.toggle-switch').on('change', function (e) {
+            e.preventDefault();
+
+            let switchElement = $(this); // The clicked switch
+            let id = switchElement.data('id'); // Get the item ID from data-id
+            let newStatus = switchElement.prop('checked') ? 1 : 0; // Determine new status
+            let module = switchElement.data('module'); // Get the module from data-module
+
+            // SweetAlert confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to ${newStatus ? 'activate' : 'deactivate'} this ${module}.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, change it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let route = `/admin/${module}/status/change/${id}`
+
+                    // Send AJAX request to update the status
+                    $.ajax({
+                        url: route, // Use the dynamically constructed route
+                        type: 'GET',
+                        success: function (response) {
+                            if (response.success) {
+                                toastr.success(`The ${module} status has been successfully updated.`);
+                            } else {
+                                toastr.error(`Failed to update the ${module} status.`);
+                                // Optionally, revert the switch back to the original state
+                                switchElement.prop('checked', !newStatus);
+                            }
+                        },
+                        error: function (error) {
+                            toastr.error('An error occurred while updating the status.');
+                            switchElement.prop('checked', !newStatus); // Revert the switch
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    switchElement.prop('checked', !newStatus); // Revert the switch on cancel
+                }
+            });
+        });
+    });
 </script>

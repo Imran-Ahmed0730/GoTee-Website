@@ -15,19 +15,19 @@
 
         <div class="mb-3">
             <label for="email" class="form-label app-form-label auth-label">{{ __('Email address') }}</label>
-            <input id="email" class="form-control app-form-control auth-input" type="email" name="email" value="{{ old('email', $request->email) }}" required autofocus autocomplete="username">
+            <input id="email" class="form-control app-form-control auth-input" type="email" name="email" value="{{ old('email', $request->email) }}" placeholder="Enter your email address" required autofocus autocomplete="username">
             <x-input-error :messages="$errors->get('email')" class="app-form-error auth-errors" />
         </div>
 
         <div class="mb-3">
             <label for="password" class="form-label app-form-label auth-label">{{ __('New password') }}</label>
-            <input id="password" class="form-control app-form-control auth-input" type="password" name="password" required autocomplete="new-password">
+            <input id="password" class="form-control app-form-control auth-input" type="password" name="password" placeholder="Create a new password" required autocomplete="new-password">
             <x-input-error :messages="$errors->get('password')" class="app-form-error auth-errors" />
         </div>
 
         <div class="mb-4">
             <label for="password_confirmation" class="form-label app-form-label auth-label">{{ __('Confirm new password') }}</label>
-            <input id="password_confirmation" class="form-control app-form-control auth-input" type="password" name="password_confirmation" required autocomplete="new-password">
+            <input id="password_confirmation" class="form-control app-form-control auth-input" type="password" name="password_confirmation" placeholder="Confirm your new password" required autocomplete="new-password">
             <x-input-error :messages="$errors->get('password_confirmation')" class="app-form-error auth-errors" />
         </div>
 

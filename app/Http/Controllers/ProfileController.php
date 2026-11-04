@@ -60,7 +60,7 @@ class ProfileController extends Controller
             Storage::disk('public')->delete($oldPhotoPath);
         }
 
-        return Redirect::route('profile.edit')->with('success', 'profile-updated');
+        return Redirect::route('admin.profile.edit')->with('success', 'profile-updated');
     }
 
     /**

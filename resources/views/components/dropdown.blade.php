@@ -7,7 +7,13 @@ $alignmentClasses = match ($align) {
     default => 'dropdown-menu-end',
 };
 
-$minWidth = $width === '48' ? '12rem' : $width;
+$widthClass = match ($width) {
+    '48', '12rem' => 'dropdown-menu-width-48',
+    '64', '16rem' => 'dropdown-menu-width-64',
+    '72', '18rem' => 'dropdown-menu-width-72',
+    '80', '20rem' => 'dropdown-menu-width-80',
+    default => 'dropdown-menu-width-48',
+};
 @endphp
 
 <div class="dropdown position-relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
@@ -15,9 +21,7 @@ $minWidth = $width === '48' ? '12rem' : $width;
         {{ $trigger }}
     </div>
 
-    <div x-show="open" class="dropdown-menu {{ $alignmentClasses }} {{ $contentClasses }} shadow"
-        style="display: none; min-width: {{ $minWidth }};"
-        @click="open = false">
+    <div x-cloak x-show="open" class="dropdown-menu {{ $alignmentClasses }} {{ $contentClasses }} {{ $widthClass }} shadow" @click="open = false">
             {{ $content }}
     </div>
 </div>

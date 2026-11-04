@@ -12,7 +12,7 @@
 
         <div class="mb-4">
             <label for="password" class="form-label app-form-label auth-label">{{ __('Password') }}</label>
-            <input id="password" class="form-control app-form-control auth-input" type="password" name="password" required autofocus autocomplete="current-password">
+            <input id="password" class="form-control app-form-control auth-input" type="password" name="password" placeholder="Enter your password" required autofocus autocomplete="current-password">
             <x-input-error :messages="$errors->get('password')" class="app-form-error auth-errors" />
         </div>
 

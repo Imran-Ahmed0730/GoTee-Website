@@ -14,13 +14,13 @@
 
         <div class="mb-3">
             <label for="email" class="form-label app-form-label auth-label">{{ __('Email address') }}</label>
-            <input id="email" class="form-control app-form-control auth-input" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
+            <input id="email" class="form-control app-form-control auth-input" type="email" name="email" value="{{ old('email') }}" placeholder="Enter your email address" required autofocus autocomplete="username">
             <x-input-error :messages="$errors->get('email')" class="app-form-error auth-errors" />
         </div>
 
         <div class="mb-3">
             <label for="password" class="form-label app-form-label auth-label">{{ __('Password') }}</label>
-            <input id="password" class="form-control app-form-control auth-input" type="password" name="password" required autocomplete="current-password">
+            <input id="password" class="form-control app-form-control auth-input" type="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
             <x-input-error :messages="$errors->get('password')" class="app-form-error auth-errors" />
         </div>
 

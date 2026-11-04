@@ -14,7 +14,7 @@
 
         <div class="mb-4">
             <label for="email" class="form-label app-form-label auth-label">{{ __('Email address') }}</label>
-            <input id="email" class="form-control app-form-control auth-input" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
+            <input id="email" class="form-control app-form-control auth-input" type="email" name="email" value="{{ old('email') }}" placeholder="Enter your email address" required autofocus autocomplete="username">
             <x-input-error :messages="$errors->get('email')" class="app-form-error auth-errors" />
         </div>
 

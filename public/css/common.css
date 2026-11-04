@@ -1,20 +1,112 @@
 :root {
-    --app-ink: #18231f;
-    --app-muted: #808a83;
-    --app-green: #c4f06b;
+    --app-ink: #102a43;
+    --app-muted: #627d98;
+    --app-navy: #163a63;
+    --app-navy-dark: #0b1f33;
+    --app-navy-light: #243b53;
+    --app-accent: #8bb8e8;
+    --app-accent-rgb: 139 184 232;
+    --app-accent-soft: #eaf2fb;
+    --bs-primary: #163a63;
+    --bs-primary-rgb: 22, 58, 99;
+    --bs-link-color: #163a63;
+    --bs-link-hover-color: #0b1f33;
+}
+
+html {
+    font-size: 14px;
 }
 
 body {
-    background: #f7f8f5;
+    background: #f5f8fc;
     color: var(--app-ink);
     font-family: Figtree, sans-serif;
 }
 
+[x-cloak] {
+    display: none !important;
+}
+
+.dropdown-menu-width-48 {
+    min-width: 12rem;
+}
+
+.dropdown-menu-width-64 {
+    min-width: 16rem;
+}
+
+.dropdown-menu-width-72 {
+    min-width: 18rem;
+}
+
+.dropdown-menu-width-80 {
+    min-width: 20rem;
+}
+
+.app-navigation-logo {
+    height: 2rem;
+    width: auto;
+}
+
+.welcome-content {
+    max-width: 44rem;
+}
+
+a {
+    color: var(--bs-link-color);
+}
+
+a:hover {
+    color: var(--bs-link-hover-color);
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--app-navy);
+    --bs-btn-border-color: var(--app-navy);
+    --bs-btn-hover-bg: var(--app-navy-dark);
+    --bs-btn-hover-border-color: var(--app-navy-dark);
+    --bs-btn-active-bg: var(--app-navy-dark);
+    --bs-btn-active-border-color: var(--app-navy-dark);
+    --bs-btn-disabled-bg: var(--app-navy);
+    --bs-btn-disabled-border-color: var(--app-navy);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--app-navy);
+    --bs-btn-border-color: var(--app-navy);
+    --bs-btn-hover-bg: var(--app-navy);
+    --bs-btn-hover-border-color: var(--app-navy);
+    --bs-btn-active-bg: var(--app-navy);
+    --bs-btn-active-border-color: var(--app-navy);
+}
+
+.form-control,
+.form-select {
+    font-size: .9375rem;
+}
+
+.form-control::placeholder,
+.form-select:invalid {
+    color: #829ab1;
+    opacity: 1;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #6b9bcf;
+    box-shadow: 0 0 0 .2rem rgb(var(--app-accent-rgb) / 28%);
+}
+
+.form-check-input:checked {
+    background-color: var(--app-navy);
+    border-color: var(--app-navy);
+}
+
 .app-brand-mark {
     align-items: center;
-    background: var(--app-green);
+    background: var(--app-accent);
     border-radius: .75rem;
-    color: #14231e;
+    color: var(--app-navy-dark);
     display: inline-flex;
     font-size: 1.125rem;
     font-weight: 700;
@@ -24,25 +116,25 @@ body {
 }
 
 .app-form-label {
-    color: #48544c;
+    color: #334e68;
     font-size: .8125rem;
     font-weight: 600;
 }
 
 .app-form-control {
-    border: 1px solid #dfe5dc;
+    border: 1px solid #cbd6e2;
     border-radius: .625rem;
     min-height: 42px;
 }
 
 .app-form-control:focus {
-    border-color: #9abd69;
-    box-shadow: 0 0 0 .2rem rgb(154 189 105 / 18%);
+    border-color: #6b9bcf;
+    box-shadow: 0 0 0 .2rem rgb(var(--app-accent-rgb) / 28%);
 }
 
 .app-form-button {
-    background: #14231e;
-    border: 1px solid #14231e;
+    background: var(--app-navy);
+    border: 1px solid var(--app-navy);
     border-radius: .625rem;
     color: #fff;
     font-weight: 600;
@@ -50,8 +142,8 @@ body {
 
 .app-form-button:hover,
 .app-form-button:focus {
-    background: #234135;
-    border-color: #234135;
+    background: var(--app-navy-dark);
+    border-color: var(--app-navy-dark);
     color: #fff;
 }
 
@@ -64,10 +156,10 @@ body {
 }
 
 .app-status {
-    background: #f0f5e9;
-    border: 1px solid #dfead2;
+    background: var(--app-accent-soft);
+    border: 1px solid #d4e4f5;
     border-radius: .625rem;
-    color: #54713d;
+    color: var(--app-navy);
     padding: .75rem 1rem;
 }
 

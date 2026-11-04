@@ -1,19 +1,16 @@
 
 @extends('admin.master')
 @section('title', 'Profile Settings')
-@push('css')
-    <style>
-        .profile-shell { margin: 0 auto; max-width: 1000px; padding: 2.5rem 1.5rem; }
-        .profile-avatar { align-items: center; background: #e7eedc; border-radius: 50%; color: #49633a; display: inline-flex; flex: 0 0 5.25rem; font-size: 1.5rem; font-weight: 600; height: 5.25rem; justify-content: center; object-fit: cover; width: 5.25rem; }
-        @media (max-width: 575.98px) {
-            .profile-shell { padding: 1.5rem 1rem; }
-        }
-    </style>
-@endpush
 @section('content')
+    <nav class="site-breadcrumb-nav" aria-label="Breadcrumb">
+        <ol class="breadcrumb site-breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i><span>Dashboard</span></a></li>
+            <li class="breadcrumb-item"><span aria-current="page"><i class="fa-solid fa-user-gear" aria-hidden="true"></i><span>Profile settings</span></span></li>
+        </ol>
+    </nav>
     <div class="mb-4">
-        <div class="text-uppercase fw-semibold" style="color: #6b8c4c; font-size: .6875rem; letter-spacing: .16em">Account</div>
-        <h1 class="h2 fw-semibold mt-2 mb-1">Profile settings</h1>
+        <div class="profile-eyebrow text-uppercase fw-semibold">Account</div>
+        <h1 class="h3 fw-semibold mt-2 mb-1">Profile settings</h1>
         <p class="admin-muted mb-0">Manage your GoTee account, sign-in details, and profile photo.</p>
     </div>
 

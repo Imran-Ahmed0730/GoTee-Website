@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-sm bg-white border-bottom">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('dashboard') }}">
-            <x-application-logo class="d-block" style="height: 2rem; width: auto" />
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('admin.dashboard') }}">
+            <x-application-logo class="app-navigation-logo d-block" />
             <span class="fw-semibold">GoTee</span>
         </a>
 
@@ -12,7 +12,7 @@
         <div id="app-navigation" class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </li>
@@ -27,7 +27,7 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('admin.profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
 

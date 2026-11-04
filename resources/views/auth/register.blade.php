@@ -12,25 +12,25 @@
 
         <div class="mb-3">
             <label for="name" class="form-label app-form-label auth-label">{{ __('Name') }}</label>
-            <input id="name" class="form-control app-form-control auth-input" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name">
+            <input id="name" class="form-control app-form-control auth-input" type="text" name="name" value="{{ old('name') }}" placeholder="Enter your name" required autofocus autocomplete="name">
             <x-input-error :messages="$errors->get('name')" class="app-form-error auth-errors" />
         </div>
 
         <div class="mb-3">
             <label for="email" class="form-label app-form-label auth-label">{{ __('Email address') }}</label>
-            <input id="email" class="form-control app-form-control auth-input" type="email" name="email" value="{{ old('email') }}" required autocomplete="username">
+            <input id="email" class="form-control app-form-control auth-input" type="email" name="email" value="{{ old('email') }}" placeholder="Enter your email address" required autocomplete="username">
             <x-input-error :messages="$errors->get('email')" class="app-form-error auth-errors" />
         </div>
 
         <div class="mb-3">
             <label for="password" class="form-label app-form-label auth-label">{{ __('Password') }}</label>
-            <input id="password" class="form-control app-form-control auth-input" type="password" name="password" required autocomplete="new-password">
+            <input id="password" class="form-control app-form-control auth-input" type="password" name="password" placeholder="Create a password" required autocomplete="new-password">
             <x-input-error :messages="$errors->get('password')" class="app-form-error auth-errors" />
         </div>
 
         <div class="mb-4">
             <label for="password_confirmation" class="form-label app-form-label auth-label">{{ __('Confirm password') }}</label>
-            <input id="password_confirmation" class="form-control app-form-control auth-input" type="password" name="password_confirmation" required autocomplete="new-password">
+            <input id="password_confirmation" class="form-control app-form-control auth-input" type="password" name="password_confirmation" placeholder="Confirm your password" required autocomplete="new-password">
             <x-input-error :messages="$errors->get('password_confirmation')" class="app-form-error auth-errors" />
         </div>
 

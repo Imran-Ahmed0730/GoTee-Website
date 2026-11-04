@@ -3,7 +3,7 @@
     <p class="admin-muted small mb-0">{{ __("Update your account name, email address, and profile photo.") }}</p>
 </header>
 
-<form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+<form method="post" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data">
     @csrf
     @method('patch')
 
@@ -27,12 +27,12 @@
     <div class="row g-3">
         <div class="col-12 col-md-6">
             <label for="name" class="form-label app-form-label">{{ __('Name') }}</label>
-            <input id="name" class="form-control app-form-control" name="name" type="text" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name">
+            <input id="name" class="form-control app-form-control" name="name" type="text" value="{{ old('name', $user->name) }}" placeholder="Enter your name" required autofocus autocomplete="name">
             <x-input-error :messages="$errors->get('name')" class="app-form-error" />
         </div>
         <div class="col-12 col-md-6">
             <label for="email" class="form-label app-form-label">{{ __('Email address') }}</label>
-            <input id="email" class="form-control app-form-control" name="email" type="email" value="{{ old('email', $user->email) }}" required autocomplete="username">
+            <input id="email" class="form-control app-form-control" name="email" type="email" value="{{ old('email', $user->email) }}" placeholder="Enter your email address" required autocomplete="username">
             <x-input-error :messages="$errors->get('email')" class="app-form-error" />
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <p class="admin-muted small mt-2 mb-0">
