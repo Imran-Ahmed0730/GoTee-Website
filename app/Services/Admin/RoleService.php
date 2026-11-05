@@ -74,6 +74,12 @@ class RoleService
      */
     public function assignPermissions(int $roleId, array $permissionIds): void
     {
-        $this->findRole($roleId)->syncPermissions($permissionIds);
+        $role = $this->findRole($roleId);
+        $permissions = Permission::query()
+            ->where('guard_name', $role->guard_name)
+            ->whereKey($permissionIds)
+            ->get();
+
+        $role->syncPermissions($permissions);
     }
 }

@@ -200,6 +200,22 @@ class ContentModulesTest extends TestCase
         $this->assertFileDoesNotExist(public_path('uploads/blogs/thumbnails/placeholder.png'));
     }
 
+    public function test_blog_thumbnail_is_required_when_creating_without_a_blog_id(): void
+    {
+        $user = $this->userWithPermissions(['Blog Add']);
+        $category = BlogCategory::create(['name' => 'News', 'status' => 1]);
+
+        $this->actingAs($user)
+            ->from(route('admin.blog.create'))
+            ->post(route('admin.blog.store'), [
+                'category_id' => $category->id,
+                'title' => 'Thumbnail Required',
+                'status' => 1,
+            ])
+            ->assertRedirect(route('admin.blog.create'))
+            ->assertSessionHasErrors(['thumbnail']);
+    }
+
     public function test_faq_categories_and_faqs_support_full_crud_and_status_changes(): void
     {
         $user = $this->userWithPermissions([

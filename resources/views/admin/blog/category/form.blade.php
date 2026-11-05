@@ -36,26 +36,27 @@
 
                     <div class="mb-3">
                         <label for="icon" class="form-label">Category icon image</label>
-                        <input id="icon" name="icon" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="form-control @error('icon') is-invalid @enderror">
+                        <input id="icon" name="icon" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="image-input form-control @error('icon') is-invalid @enderror">
                         <div class="form-text">Choose an icon image (JPG, PNG, or WebP; maximum 5 MB). The placeholder is shown until an image is uploaded.</div>
                         @error('icon')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         <img
                             src="{{ asset(isset($item) && $item->icon && file_exists($item->icon) ? $item->icon : 'images/blog-category-placeholder.svg') }}"
                             alt="{{ $item->name ?? 'Category icon' }}"
                             class="img-thumbnail mt-3"
+                            id="preview-icon"
                             style="max-width: 160px; max-height: 120px;"
                         >
                     </div>
 
                     <div class="mb-3">
                         <label for="cover_photo" class="form-label">Cover photo</label>
-                        <input id="cover_photo" name="cover_photo" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="form-control @error('cover_photo') is-invalid @enderror">
+                        <input id="cover_photo" name="cover_photo" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="image-input form-control @error('cover_photo') is-invalid @enderror">
                         <div class="form-text">JPG, PNG, or WebP; maximum 5 MB.</div>
                         @error('cover_photo')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         @if (!empty($item?->cover_photo) && file_exists($item->cover_photo))
-                            <img src="{{ asset($item->cover_photo) }}" alt="{{ $item->name }} cover" class="img-thumbnail mt-3" style="max-width: 240px; max-height: 160px;">
+                            <img src="{{ asset($item->cover_photo) }}" alt="{{ $item->name }} cover" class="img-thumbnail mt-3" id="preview-cover_photo" style="max-width: 240px; max-height: 160px;">
                         @else
-                            <img src="{{ asset('images/blog-category-placeholder.svg') }}" alt="{{ $item->name }} cover" class="img-thumbnail mt-3" style="max-width: 240px; max-height: 160px;">
+                            <img src="{{ asset('images/blog-category-placeholder.svg') }}" alt="Cover" class="img-thumbnail mt-3" id="preview-cover_photo" style="max-width: 240px; max-height: 160px;">
                         @endif
                     </div>
 
@@ -78,3 +79,23 @@
         </div>
     </section>
 @endsection
+@push('js')
+    <script>
+        $(document).ready(function () {
+            $('.image-input').on('change', function () {
+                const input = this;
+                const file = input.files[0];
+
+                if (!file) {
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.addEventListener('load', function (event) {
+                    $('#preview-' + input.id).attr('src', event.target.result);
+                });
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
+@endpush

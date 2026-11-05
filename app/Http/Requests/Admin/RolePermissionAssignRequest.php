@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class RolePermissionAssignRequest extends FormRequest
 {
@@ -25,7 +26,7 @@ class RolePermissionAssignRequest extends FormRequest
         return [
             'id' => ['required', 'integer', 'exists:roles,id'],
             'permission' => ['sometimes', 'array'],
-            'permission.*' => ['integer', 'exists:permissions,id'],
+            'permission.*' => ['integer', Rule::exists('permissions', 'id')->where('guard_name', 'web')],
         ];
     }
 }

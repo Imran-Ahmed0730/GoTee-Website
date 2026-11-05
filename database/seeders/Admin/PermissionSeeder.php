@@ -13,7 +13,14 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-             //Blog Category
+            // Banner
+            'Banner Add',
+            'Banner Delete',
+            'Banner Status Change',
+            'Banner Update',
+            'Banner View',
+
+            // Blog Category
             'Blog Category Add',
             'Blog Category Delete',
             'Blog Category Status Change',
@@ -42,6 +49,20 @@ class PermissionSeeder extends Seeder
             'FAQ Status Change',
             'FAQ Update',
             'FAQ View',
+
+            // Client
+            'Client Add',
+            'Client Delete',
+            'Client Status Change',
+            'Client Update',
+            'Client View',
+
+            // Employee
+            'Employee Add',
+            'Employee Delete',
+            'Employee Status Change',
+            'Employee Update',
+            'Employee View',
 
             // Permission
             'Permission Add',

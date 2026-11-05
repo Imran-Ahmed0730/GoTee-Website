@@ -48,9 +48,9 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
+                        <th scope="col">Thumbnail</th>
                         <th scope="col">Title</th>
                         <th scope="col">Category</th>
-                        <th scope="col">Slug</th>
                         <th scope="col">Status</th>
                         <th scope="col" class="text-end">Actions</th>
                     </tr>
@@ -60,13 +60,19 @@
                         <tr>
                             <th scope="row">{{ $items->firstItem() + $loop->index }}</th>
                             <td>
+                                @if ($item->thumbnail)
+                                    <img src="{{ asset($item->thumbnail) }}" alt="{{ $item->title }}" class="img-thumbnail rounded" style="width: 50px; height: 50px;">
+                                @else
+                                    <img src="{{ asset('images/blog-placeholder.svg') }}" alt="{{ $item->title }}" class="img-thumbnail rounded" style="width: 50px; height: 50px;">
+                                @endif
+                            </td>
+                            <td>
                                 <span class="fw-semibold">{{ $item->title }}</span>
                                 @if ($item->description)
-                                    <span class="d-block small text-secondary">{{ \Illuminate\Support\Str::limit($item->description, 90) }}</span>
+                                    <span class="d-block small text-secondary">{{ \Illuminate\Support\Str::limit(strip_tags($item->description), 90) }}</span>
                                 @endif
                             </td>
                             <td>{{ $item->category->name }}</td>
-                            <td><code>{{ $item->slug }}</code></td>
                             <td>
                                 @can('Blog Status Change')
                                     <form action="{{ route('admin.blog.status', $item) }}" method="POST">

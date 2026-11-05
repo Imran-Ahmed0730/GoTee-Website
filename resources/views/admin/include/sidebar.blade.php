@@ -43,6 +43,22 @@
             @endcan
         @endcanany
 
+        @canany(['Client View', 'Employee View'])
+            <div class="admin-nav-label mt-3">Team</div>
+            @can('Client View')
+                <a href="{{ route('admin.client.index') }}" class="admin-nav-link {{ request()->routeIs('admin.client.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-handshake" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Clients</span>
+                </a>
+            @endcan
+            @can('Employee View')
+                <a href="{{ route('admin.employee.index') }}" class="admin-nav-link {{ request()->routeIs('admin.employee.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-users" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Employees</span>
+                </a>
+            @endcan
+        @endcanany
+
         @canany(['Role View', 'Permission View'])
             <div class="admin-nav-label mt-3">Roles & Permissions</div>
             @can('Role View')
@@ -105,15 +121,6 @@
         <div id="projects-submenu" class="admin-submenu" hidden>
             <a class="admin-submenu-link" href="#delivery-tracker-title">In delivery</a>
             <a class="admin-submenu-link" href="#delivery-tracker-title">Upcoming milestones</a>
-        </div>
-        <button type="button" class="admin-nav-link admin-submenu-toggle" aria-label="Clients submenu" title="Clients" aria-expanded="false" aria-controls="clients-submenu" data-submenu-toggle>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M3 20v-1.5A4.5 4.5 0 0 1 7.5 14h3a4.5 4.5 0 0 1 4.5 4.5V20M16 4.8a3.5 3.5 0 0 1 0 6.4m2 3a4.5 4.5 0 0 1 3 4.3V20"/></svg>
-                <span class="admin-nav-text">Clients</span>
-                <svg class="admin-submenu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
-        </button>
-        <div id="clients-submenu" class="admin-submenu" hidden>
-            <a class="admin-submenu-link" href="#connected-fleet-title">Client deployments</a>
-            <a class="admin-submenu-link" href="#connected-fleet-title">Connected devices</a>
         </div>
         <button type="button" class="admin-nav-link admin-submenu-toggle" aria-label="Project reports submenu" title="Project reports" aria-expanded="false" aria-controls="reports-submenu" data-submenu-toggle>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 19V9m5 10V5m5 14v-7m5 7V3"/></svg>

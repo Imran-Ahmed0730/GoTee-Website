@@ -13,7 +13,7 @@ class ViewServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer(
-            ['admin.include.header', 'admin.include.sidebar'],
+            ['admin.include.header', 'admin.include.sidebar', 'admin.master'],
             function ($view): void {
                 $businessName = getSetting('business_name') ?? config('app.name');
 
