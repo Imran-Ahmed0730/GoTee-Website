@@ -50,8 +50,10 @@
                         <input id="thumbnail" name="thumbnail" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="form-control @error('thumbnail') is-invalid @enderror" @required(!isset($item))>
                         <div class="form-text">JPG, PNG, or WebP; maximum 5 MB.</div>
                         @error('thumbnail')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        @if (!empty($item?->thumbnail))
-                            <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($item->thumbnail) }}" alt="{{ $item->title }} thumbnail" class="img-thumbnail mt-3" style="max-width: 240px; max-height: 160px;">
+                        @if (!empty($item?->thumbnail) && file_exists($item->thumbnail))
+                            <img src="{{ asset($item->thumbnail) }}" alt="{{ $item->title }} thumbnail" class="img-thumbnail mt-3" style="max-width: 240px; max-height: 160px;">
+                        @else
+                            <img src="{{ asset('images/blog-category-placeholder.svg') }}" alt="{{ $item->title }} thumbnail" class="img-thumbnail mt-3" style="max-width: 240px; max-height: 160px;">
                         @endif
                     </div>
 
@@ -60,8 +62,10 @@
                         <input id="cover_photo" name="cover_photo" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="form-control @error('cover_photo') is-invalid @enderror">
                         <div class="form-text">JPG, PNG, or WebP; maximum 5 MB.</div>
                         @error('cover_photo')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        @if (!empty($item?->cover_photo))
-                            <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($item->cover_photo) }}" alt="{{ $item->title }} cover" class="img-thumbnail mt-3" style="max-width: 320px; max-height: 180px;">
+                        @if (!empty($item?->cover_photo) && file_exists($item->cover_photo))
+                            <img src="{{ asset($item->cover_photo) }}" alt="{{ $item->title }} cover" class="img-thumbnail mt-3" style="max-width: 320px; max-height: 180px;">
+                        @else
+                            <img src="{{ asset('images/blog-category-placeholder.svg') }}" alt="{{ $item->title }} cover" class="img-thumbnail mt-3" style="max-width: 320px; max-height: 180px;">
                         @endif
                     </div>
 

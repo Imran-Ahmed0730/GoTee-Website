@@ -1,8 +1,8 @@
 <aside id="admin-sidebar" class="admin-sidebar flex-shrink-0" aria-label="Main navigation">
     <a href="{{ route('admin.dashboard') }}" class="admin-brand d-flex align-items-center gap-3 px-2 pb-2">
-        <span class="app-brand-mark">G</span>
+        <span class="app-brand-mark">{{ $firstLetter }}</span>
         <span class="admin-brand-copy">
-                <span class="d-block fs-5 fw-semibold">GoTee</span>
+                <span class="d-block fs-5 fw-semibold">{{$business_name}}</span>
         </span>
     </a>
 
@@ -57,6 +57,34 @@
                     <span class="admin-nav-text">Permissions</span>
                 </a>
             @endcan
+        @endcanany
+
+        @canany(['Settings View', 'Settings Site', 'Settings Logo & Favicon', 'Settings Contact', 'Settings Social Media', 'Settings Smtp'])
+            <button type="button" class="admin-nav-link admin-submenu-toggle {{ request()->routeIs('admin.setting.*') ? 'active' : '' }}" aria-label="Settings submenu" title="Settings" aria-expanded="false" aria-controls="settings-submenu" data-submenu-toggle {{ request()->routeIs('admin.setting.*') ? 'data-submenu-active=true' : '' }}>
+                <i class="fa-solid fa-gear" aria-hidden="true"></i>
+                <span class="admin-nav-text">Settings</span>
+                <svg class="admin-submenu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+            </button>
+            <div id="settings-submenu" class="admin-submenu" hidden>
+                @can('Settings View')
+                    <a class="admin-submenu-link {{ request()->routeIs('admin.setting.index') ? 'active' : '' }}" href="{{ route('admin.setting.index') }}">Settings overview</a>
+                @endcan
+                @can('Settings Site')
+                    <a class="admin-submenu-link {{ request()->route('section') === 'general' ? 'active' : '' }}" href="{{ route('admin.setting.edit', 'general') }}">General</a>
+                @endcan
+                @can('Settings Logo & Favicon')
+                    <a class="admin-submenu-link {{ request()->route('section') === 'logos-favicon' ? 'active' : '' }}" href="{{ route('admin.setting.edit', 'logos-favicon') }}">Logo & favicon</a>
+                @endcan
+                @can('Settings Contact')
+                    <a class="admin-submenu-link {{ request()->route('section') === 'contact' ? 'active' : '' }}" href="{{ route('admin.setting.edit', 'contact') }}">Contact</a>
+                @endcan
+                @can('Settings Social Media')
+                    <a class="admin-submenu-link {{ request()->route('section') === 'social-media' ? 'active' : '' }}" href="{{ route('admin.setting.edit', 'social-media') }}">Social media</a>
+                @endcan
+                @can('Settings Smtp')
+                    <a class="admin-submenu-link {{ request()->route('section') === 'smtp' ? 'active' : '' }}" href="{{ route('admin.setting.edit', 'smtp') }}">SMTP</a>
+                @endcan
+            </div>
         @endcanany
 
 
@@ -119,12 +147,4 @@
                 <a class="admin-submenu-link" href="#connected-fleet-title">System monitoring</a>
             </div>
     </nav>
-
-    <div class="admin-sidebar-note mt-auto">
-        <div class="d-flex align-items-center gap-2 small fw-medium text-white">
-            <span class="admin-sidebar-status-dot rounded-circle"></span>
-            Systems are looking good
-        </div>
-        <p class="mb-0 mt-2 small">Your connected systems and active projects are on track.</p>
-    </div>
 </aside>

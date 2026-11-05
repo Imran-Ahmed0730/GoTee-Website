@@ -5,7 +5,6 @@ namespace App\Services\Admin;
 use App\Models\Admin\Blog;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use Throwable;
 
@@ -36,20 +35,20 @@ class BlogService
      */
     public function createBlog(array $data): Blog
     {
-        $storedFiles = [];
+        $storedImages = [];
 
         try {
-            $data['thumbnail'] = $this->storeImage($data['thumbnail'], 'blogs/thumbnails');
-            $storedFiles[] = $data['thumbnail'];
+            $data['thumbnail'] = updateImagePath($data['thumbnail'], null, 'blogs/thumbnails');
+            $storedImages[] = $data['thumbnail'];
 
             if (($data['cover_photo'] ?? null) instanceof UploadedFile) {
-                $data['cover_photo'] = $this->storeImage($data['cover_photo'], 'blogs/covers');
-                $storedFiles[] = $data['cover_photo'];
+                $data['cover_photo'] = updateImagePath($data['cover_photo'], null, 'blogs/covers');
+                $storedImages[] = $data['cover_photo'];
             }
 
             return Blog::create($data);
         } catch (Throwable $exception) {
-            $this->deleteStoredFiles($storedFiles);
+            $this->deleteImages($storedImages);
 
             throw $exception;
         }
@@ -60,41 +59,41 @@ class BlogService
      */
     public function updateBlog(Blog $blog, array $data): Blog
     {
-        $oldFiles = [];
-        $storedFiles = [];
+        $oldImages = [];
+        $storedImages = [];
 
         try {
             if (($data['thumbnail'] ?? null) instanceof UploadedFile) {
-                $oldFiles[] = $blog->thumbnail;
-                $data['thumbnail'] = $this->storeImage($data['thumbnail'], 'blogs/thumbnails');
-                $storedFiles[] = $data['thumbnail'];
+                $oldImages[] = $blog->thumbnail;
+                $data['thumbnail'] = updateImagePath($data['thumbnail'], null, 'blogs/thumbnails');
+                $storedImages[] = $data['thumbnail'];
             }
 
             if (($data['cover_photo'] ?? null) instanceof UploadedFile) {
-                $oldFiles[] = $blog->cover_photo;
-                $data['cover_photo'] = $this->storeImage($data['cover_photo'], 'blogs/covers');
-                $storedFiles[] = $data['cover_photo'];
+                $oldImages[] = $blog->cover_photo;
+                $data['cover_photo'] = updateImagePath($data['cover_photo'], null, 'blogs/covers');
+                $storedImages[] = $data['cover_photo'];
             }
 
             $blog->update($data);
         } catch (Throwable $exception) {
-            $this->deleteStoredFiles($storedFiles);
+            $this->deleteImages($storedImages);
 
             throw $exception;
         }
 
-        $this->deleteStoredFiles($oldFiles);
+        $this->deleteImages($oldImages);
 
         return $blog;
     }
 
     public function deleteBlog(Blog $blog): void
     {
-        $files = [$blog->thumbnail, $blog->cover_photo];
+        $images = [$blog->thumbnail, $blog->cover_photo];
 
         $blog->delete();
 
-        $this->deleteStoredFiles($files);
+        $this->deleteImages($images);
     }
 
     public function changeStatus(Blog $blog): bool
@@ -102,28 +101,20 @@ class BlogService
         return $blog->update(['status' => ! $blog->status]);
     }
 
-    private function storeImage(UploadedFile $image, string $directory): string
+    private function deleteImage(?string $path): void
     {
-        $path = $image->store($directory, 'public');
-
-        if (! is_string($path)) {
-            throw new RuntimeException('Unable to store the blog image.');
+        if ($path !== null && is_file(public_path($path)) && ! unlink(public_path($path))) {
+            throw new RuntimeException('Unable to remove a blog image.');
         }
-
-        return $path;
     }
 
     /**
      * @param  array<int, string|null>  $paths
      */
-    private function deleteStoredFiles(array $paths): void
+    private function deleteImages(array $paths): void
     {
-        $disk = Storage::disk('public');
-
         foreach (array_filter($paths) as $path) {
-            if ($disk->exists($path) && ! $disk->delete($path)) {
-                throw new RuntimeException('Unable to remove a stored blog image.');
-            }
+            $this->deleteImage($path);
         }
     }
 }

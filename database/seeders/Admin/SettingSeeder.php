@@ -14,19 +14,19 @@ class SettingSeeder extends Seeder
     {
         $settings = [
             ['key' => 'address', 'value' => 'Dhaka, Bangladesh'],
-            ['key' => 'business_name', 'value' => 'Optilius EMS'],
+            ['key' => 'business_name', 'value' => 'GoTEE'],
             ['key' => 'closed_on', 'value' => '["1", "2"]'],
             ['key' => 'closing_time', 'value' => '06:00 PM'],
             ['key' => 'developed_by', 'value' => 'GoTee'],
-            ['key' => 'developed_by_url', 'value' => ''],
+            ['key' => 'developed_by_url', 'value' => 'https://gotee-bd.com'],
             ['key' => 'email', 'value' => 'info@gotee.com'],
             ['key' => 'facebook_url', 'value' => ''],
             ['key' => 'instagram_url', 'value' => ''],
             ['key' => 'linkedin_url', 'value' => ''],
-            ['key' => 'meta_description', 'value' => 'This is a boiler template for attendance system'],
+            ['key' => 'meta_description', 'value' => 'This is a boiler template for GoTEE'],
             ['key' => 'opening_time', 'value' => '09:00 AM'],
             ['key' => 'phone', 'value' => '0123456789'],
-            ['key' => 'short_bio', 'value' => 'An attendance management system for office employees'],
+            ['key' => 'short_bio', 'value' => 'Building cutting edge technologies'],
             ['key' => 'site_dark_logo', 'value' => 'backend/assets/img/AdminLTEFullLogo.png'],
             ['key' => 'site_favicon', 'value' => 'backend/assets/img/AdminLTELogo.png'],
             ['key' => 'site_footer_logo', 'value' => 'backend/assets/img/AdminLTEFullLogo.png'],
@@ -40,7 +40,10 @@ class SettingSeeder extends Seeder
         ];
 
         foreach ($settings as $setting) {
-            Setting::create($setting);
+            Setting::query()->updateOrCreate(
+                ['key' => $setting['key']],
+                ['value' => $setting['value']],
+            );
         }
     }
 }

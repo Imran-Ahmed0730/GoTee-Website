@@ -4,8 +4,14 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
         <div class="d-flex align-items-center gap-2 d-lg-none">
-            <span class="admin-mobile-brand">G</span>
-            <span class="fw-semibold">GoTee</span>
+            <span class="admin-mobile-brand">
+                @if ($logo && is_file(public_path($logo)))
+                    <img src="{{ asset($logo) }}" alt="{{ $business_name }}" class="img-fluid" style="max-height: 30px;">
+                @else
+                    {{ $firstLetter }}
+                @endif
+            </span>
+            <span class="fw-semibold">{{ $business_name }}</span>
         </div>
     </div>
 

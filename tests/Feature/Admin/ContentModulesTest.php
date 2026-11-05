@@ -9,7 +9,6 @@ use App\Models\Admin\FaqCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
@@ -19,7 +18,6 @@ class ContentModulesTest extends TestCase
 
     public function test_blog_categories_can_be_created_updated_status_changed_and_deleted(): void
     {
-        Storage::fake('public');
         $user = $this->userWithPermissions([
             'Blog Category Add',
             'Blog Category View',
@@ -47,7 +45,7 @@ class ContentModulesTest extends TestCase
             'name' => 'Summer Wear',
             'slug' => 'summer-wear',
         ]);
-        Storage::disk('public')->assertExists($category->cover_photo);
+        $this->assertFileExists(public_path($storedCoverPhoto));
         $this->assertFileExists(public_path($storedIcon));
         $this->assertSame('summer-wear-2', BlogCategory::create([
             'name' => 'Summer-Wear',
@@ -77,18 +75,21 @@ class ContentModulesTest extends TestCase
                 'name' => 'Warm Weather',
                 'description' => 'Updated seasonal styles',
                 'icon' => $this->fakePng('updated-icon.png'),
+                'cover_photo' => $this->fakePng('updated-cover.png'),
                 'status' => 1,
             ])
             ->assertRedirect(route('admin.blog.category.index'));
 
         $category->refresh();
         $updatedIcon = $category->icon;
+        $updatedCoverPhoto = $category->cover_photo;
         $this->assertSame('warm-weather', $category->slug);
         $this->assertNotSame($storedIcon, $updatedIcon);
         $this->assertFileDoesNotExist(public_path($storedIcon));
         $this->assertFileExists(public_path($updatedIcon));
-        $this->assertSame($storedCoverPhoto, $category->cover_photo);
-        Storage::disk('public')->assertExists($storedCoverPhoto);
+        $this->assertNotSame($storedCoverPhoto, $updatedCoverPhoto);
+        $this->assertFileDoesNotExist(public_path($storedCoverPhoto));
+        $this->assertFileExists(public_path($updatedCoverPhoto));
 
         $this->actingAs($user)
             ->patch(route('admin.blog.category.status', $category))
@@ -100,13 +101,13 @@ class ContentModulesTest extends TestCase
             ->assertRedirect(route('admin.blog.category.index'));
 
         $this->assertDatabaseMissing('blog_categories', ['id' => $category->id]);
-        Storage::disk('public')->assertMissing($category->cover_photo);
+        $this->assertFileDoesNotExist(public_path($storedCoverPhoto));
+        $this->assertFileDoesNotExist(public_path($updatedCoverPhoto));
         $this->assertFileDoesNotExist(public_path($updatedIcon));
     }
 
     public function test_blogs_can_be_created_updated_filtered_status_changed_and_deleted(): void
     {
-        Storage::fake('public');
         $user = $this->userWithPermissions([
             'Blog Add',
             'Blog View',
@@ -132,13 +133,17 @@ class ContentModulesTest extends TestCase
         $storedThumbnail = $blog->thumbnail;
         $storedCoverPhoto = $blog->cover_photo;
         $this->assertSame('new-summer-collection', $blog->slug);
-        Storage::disk('public')->assertExists($blog->thumbnail);
-        Storage::disk('public')->assertExists($blog->cover_photo);
-        Storage::disk('public')->put('blogs/thumbnails/placeholder.png', 'placeholder image');
+        $this->assertFileExists(public_path($storedThumbnail));
+        $this->assertFileExists(public_path($storedCoverPhoto));
+        $placeholderDirectory = public_path('uploads/blogs/thumbnails');
+        if (! is_dir($placeholderDirectory)) {
+            mkdir($placeholderDirectory, 0775, true);
+        }
+        file_put_contents($placeholderDirectory.'/placeholder.png', 'placeholder image');
         $collisionBlog = Blog::create([
             'category_id' => $category->id,
             'title' => 'New-Summer-Collection',
-            'thumbnail' => 'blogs/thumbnails/placeholder.png',
+            'thumbnail' => 'uploads/blogs/thumbnails/placeholder.png',
             'status' => 1,
         ]);
         $this->assertSame('new-summer-collection-2', $collisionBlog->slug);
@@ -158,16 +163,22 @@ class ContentModulesTest extends TestCase
                 'category_id' => $category->id,
                 'title' => 'Summer Collection Guide',
                 'description' => 'Updated details.',
+                'thumbnail' => $this->fakePng('updated-thumbnail.png'),
+                'cover_photo' => $this->fakePng('updated-cover.png'),
                 'status' => 1,
             ])
             ->assertRedirect(route('admin.blog.index'));
 
         $blog->refresh();
+        $updatedThumbnail = $blog->thumbnail;
+        $updatedCoverPhoto = $blog->cover_photo;
         $this->assertSame('summer-collection-guide', $blog->slug);
-        $this->assertSame($storedThumbnail, $blog->thumbnail);
-        $this->assertSame($storedCoverPhoto, $blog->cover_photo);
-        Storage::disk('public')->assertExists($storedThumbnail);
-        Storage::disk('public')->assertExists($storedCoverPhoto);
+        $this->assertNotSame($storedThumbnail, $updatedThumbnail);
+        $this->assertNotSame($storedCoverPhoto, $updatedCoverPhoto);
+        $this->assertFileDoesNotExist(public_path($storedThumbnail));
+        $this->assertFileDoesNotExist(public_path($storedCoverPhoto));
+        $this->assertFileExists(public_path($updatedThumbnail));
+        $this->assertFileExists(public_path($updatedCoverPhoto));
 
         $this->actingAs($user)
             ->patch(route('admin.blog.status', $blog))
@@ -179,14 +190,14 @@ class ContentModulesTest extends TestCase
             ->assertRedirect(route('admin.blog.index'));
 
         $this->assertDatabaseMissing('blogs', ['id' => $blog->id]);
-        Storage::disk('public')->assertMissing($blog->thumbnail);
-        Storage::disk('public')->assertMissing($blog->cover_photo);
+        $this->assertFileDoesNotExist(public_path($updatedThumbnail));
+        $this->assertFileDoesNotExist(public_path($updatedCoverPhoto));
 
         $this->actingAs($user)
             ->delete(route('admin.blog.category.destroy', $category))
             ->assertRedirect(route('admin.blog.category.index'));
         $this->assertDatabaseMissing('blogs', ['id' => $collisionBlog->id]);
-        Storage::disk('public')->assertMissing('blogs/thumbnails/placeholder.png');
+        $this->assertFileDoesNotExist(public_path('uploads/blogs/thumbnails/placeholder.png'));
     }
 
     public function test_faq_categories_and_faqs_support_full_crud_and_status_changes(): void
