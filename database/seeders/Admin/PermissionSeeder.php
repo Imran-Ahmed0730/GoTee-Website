@@ -57,6 +57,20 @@ class PermissionSeeder extends Seeder
             'Client Update',
             'Client View',
 
+            // Testimonials
+            'Testimonial Add',
+            'Testimonial Delete',
+            'Testimonial Status Change',
+            'Testimonial Update',
+            'Testimonial View',
+
+            // Case Studies
+            'Case Study Add',
+            'Case Study Delete',
+            'Case Study Status Change',
+            'Case Study Update',
+            'Case Study View',
+
             // Employee
             'Employee Add',
             'Employee Delete',

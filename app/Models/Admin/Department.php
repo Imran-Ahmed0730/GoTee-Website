@@ -4,6 +4,7 @@ namespace App\Models\Admin;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Department extends Model
 {
@@ -13,7 +14,15 @@ class Department extends Model
     {
         return $this->belongsTo(User::class, 'dept_head_id')
             ->withDefault([
-                'name' => '-'
+                'first_name' => 'N/A',
+                'last_name' => '',
+                'email' => 'N/A',
+                'profile_photo_path' => null,
             ]);
+    }
+
+    public function employees(): HasMany
+    {
+        return $this->hasMany(Employee::class, 'department_id');
     }
 }

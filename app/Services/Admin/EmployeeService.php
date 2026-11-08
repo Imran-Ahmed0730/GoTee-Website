@@ -7,6 +7,7 @@ use App\Models\Admin\Department;
 use App\Models\Admin\Designation;
 use App\Models\Admin\Employee;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,25 +20,51 @@ use Throwable;
 
 class EmployeeService
 {
-    public function getAllEmployees(?string $search = null, ?string $status = null): LengthAwarePaginator
+    /**
+     * @param  array{search?: string, status?: string, department_id?: string, designation_id?: string, reporting_manager_id?: string, show_as_team?: string}  $filters
+     */
+    public function getAllEmployees(array $filters): LengthAwarePaginator
     {
         return Employee::query()
             ->with([
-                'user:id,name,email,profile_photo_path',
+                'user:id,first_name,last_name,email,profile_photo_path',
                 'bloodGroup:id,name',
                 'department:id,name',
                 'designation:id,name',
+                'reportingManager:id,first_name,last_name',
             ])
-            ->when($search !== null && $search !== '', function (Builder $query) use ($search): void {
+            ->when(isset($filters['search']) && $filters['search'] !== '', function (Builder $query) use ($filters): void {
+                $search = $filters['search'];
+
                 $query->where(function (Builder $query) use ($search): void {
                     $query->where('phone', 'like', '%'.$search.'%')
                         ->orWhereHas('user', function (Builder $query) use ($search): void {
-                            $query->where('name', 'like', '%'.$search.'%')
+                            $query->where('first_name', 'like', '%'.$search.'%')
+                                ->orWhere('last_name', 'like', '%'.$search.'%')
                                 ->orWhere('email', 'like', '%'.$search.'%');
                         });
                 });
             })
-            ->when(in_array($status, ['0', '1'], true), fn (Builder $query): Builder => $query->where('status', (int) $status))
+            ->when(
+                isset($filters['status']) && $filters['status'] !== '',
+                fn (Builder $query): Builder => $query->where('status', (int) $filters['status']),
+            )
+            ->when(
+                isset($filters['department_id']) && $filters['department_id'] !== '',
+                fn (Builder $query): Builder => $query->where('department_id', (int) $filters['department_id']),
+            )
+            ->when(
+                isset($filters['designation_id']) && $filters['designation_id'] !== '',
+                fn (Builder $query): Builder => $query->where('designation_id', (int) $filters['designation_id']),
+            )
+            ->when(
+                isset($filters['reporting_manager_id']) && $filters['reporting_manager_id'] !== '',
+                fn (Builder $query): Builder => $query->where('reporting_manager_id', (int) $filters['reporting_manager_id']),
+            )
+            ->when(
+                isset($filters['show_as_team']) && $filters['show_as_team'] !== '',
+                fn (Builder $query): Builder => $query->where('show_as_team', (int) $filters['show_as_team']),
+            )
             ->orderByDesc('id')
             ->paginate(15)
             ->withQueryString();
@@ -45,9 +72,29 @@ class EmployeeService
 
     /**
      * @return array{
+     *     departments: Collection<int, Department>,
+     *     designations: Collection<int, Designation>,
+     *     reportingManagers: Collection<int, Employee>
+     * }
+     */
+    public function getFilterOptions(): array
+    {
+        return [
+            'departments' => Department::query()->orderBy('name')->get(),
+            'designations' => Designation::query()->orderBy('name')->get(),
+            'reportingManagers' => Employee::query()
+                ->with('user:id,first_name,last_name')
+                ->orderBy('id')
+                ->get(),
+        ];
+    }
+
+    /**
+     * @return array{
      *     bloodGroups: Collection<int, BloodGroup>,
      *     departments: Collection<int, Department>,
-     *     designations: Collection<int, Designation>
+     *     designations: Collection<int, Designation>,
+     *     employees: Collection<int, Employee>
      * }
      */
     public function getFormOptions(): array
@@ -56,6 +103,11 @@ class EmployeeService
             'bloodGroups' => BloodGroup::query()->orderBy('name')->get(),
             'departments' => Department::query()->where('status', 1)->orderBy('name')->get(),
             'designations' => Designation::query()->where('status', 1)->orderBy('name')->get(),
+            'employees' => Employee::query()
+                ->with('user:id,first_name,last_name')
+                ->where('status', 1)
+                ->orderBy('id')
+                ->get(),
         ];
     }
 
@@ -64,28 +116,38 @@ class EmployeeService
      */
     public function createEmployee(array $data): Employee
     {
-        $profilePhotoPath = updateImagePath($data['profile_photo_path'], null, 'user/profile');
+        $profilePhotoPath = null;
         $nidImagePath = null;
 
         try {
-            return DB::transaction(function () use ($data, $nidImagePath): Employee {
+            $profilePhotoPath = updateImagePath($data['profile_photo_path'], null, 'employees/profile');
+            $nidImagePath = updateImagePath($data['nid_image'], null, 'employees/nid', 'local');
+
+            return DB::transaction(function () use ($data, $profilePhotoPath, $nidImagePath): Employee {
                 $user = User::create([
-                    'name' => $data['name'],
+                    'first_name' => $data['first_name'],
+                    'last_name' => $data['last_name'] ?? null,
+                    'username' => User::generateUsername($data['first_name'], (int) Carbon::parse($data['joining_date'])->year),
                     'email' => $data['email'],
                     'password' => '12345678',
                     'role' => 2,
                     'profile_photo_path' => $profilePhotoPath,
                 ]);
 
+                $employeeId = Carbon::parse($data['joining_date'])->format('Y')
+                    .str_pad((string) $user->id, 5, '0', STR_PAD_LEFT);
 
                 return Employee::create([
-                    ...Arr::except($data, ['name', 'email', 'nid_image', 'profile_photo_path']),
+                    ...Arr::except($data, ['first_name', 'last_name', 'email', 'nid_image', 'profile_photo_path']),
                     'user_id' => $user->id,
+                    'employee_id' => $employeeId,
                     'nid_image' => $nidImagePath,
                 ]);
             });
         } catch (Throwable $exception) {
-            $this->deleteProfilePhotoIfExists($profilePhotoPath);
+            if ($profilePhotoPath !== null) {
+                $this->deleteProfilePhotoIfExists($profilePhotoPath);
+            }
 
             if ($nidImagePath !== null) {
                 $this->deletePrivateImageIfExists($nidImagePath);
@@ -101,7 +163,7 @@ class EmployeeService
     public function updateEmployee(Employee $employee, array $data): Employee
     {
         $newProfilePhotoPath = isset($data['profile_photo_path'])
-            ? updateImagePath($data['profile_photo_path'], null, 'user/profile')
+            ? updateImagePath($data['profile_photo_path'], null, 'employees/profile')
             : null;
         $newNidImagePath = isset($data['nid_image'])
             ? updateImagePath($data['nid_image'], null, 'employees/nid', 'local')
@@ -112,7 +174,8 @@ class EmployeeService
         try {
             DB::transaction(function () use ($employee, $data, $newProfilePhotoPath, $newNidImagePath): void {
                 $employee->user->update([
-                    'name' => $data['name'],
+                    'first_name' => $data['first_name'],
+                    'last_name' => $data['last_name'] ?? null,
                     'email' => $data['email'],
                 ]);
 
@@ -120,7 +183,7 @@ class EmployeeService
                     $employee->user->forceFill(['profile_photo_path' => $newProfilePhotoPath])->save();
                 }
 
-                $employeeData = Arr::except($data, ['name', 'email', 'nid_image', 'profile_photo_path']);
+                $employeeData = Arr::except($data, ['first_name', 'last_name', 'email', 'nid_image', 'profile_photo_path']);
 
                 if ($newNidImagePath !== null) {
                     $employeeData['nid_image'] = $newNidImagePath;
@@ -196,7 +259,7 @@ class EmployeeService
 
     private function deleteProfilePhotoIfExists(string $path): void
     {
-        if (! Str::startsWith($path, 'uploads/user/profile/')) {
+        if (! Str::startsWith($path, ['uploads/user/profile/', 'uploads/employees/profile/'])) {
             return;
         }
 

@@ -58,6 +58,21 @@
                 </a>
             @endcan
         @endcanany
+        @canany(['Testimonial View', 'Case Study View'])
+            <div class="admin-nav-label mt-3">Client stories</div>
+            @can('Testimonial View')
+                <a href="{{ route('admin.testimonial.index') }}" class="admin-nav-link {{ request()->routeIs('admin.testimonial.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-quote-left" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Testimonials</span>
+                </a>
+            @endcan
+            @can('Case Study View')
+                <a href="{{ route('admin.case-study.index') }}" class="admin-nav-link {{ request()->routeIs('admin.case-study.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Case studies</span>
+                </a>
+            @endcan
+        @endcanany
 
         @canany(['Role View', 'Permission View'])
             <div class="admin-nav-label mt-3">Roles & Permissions</div>

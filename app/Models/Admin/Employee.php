@@ -30,21 +30,42 @@ class Employee extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withDefault([
+            'first_name' => 'N/A',
+            'last_name' => '',
+            'email' => 'N/A',
+            'profile_photo_path' => null,
+        ]);
     }
 
     public function bloodGroup(): BelongsTo
     {
-        return $this->belongsTo(BloodGroup::class);
+        return $this->belongsTo(BloodGroup::class)->withDefault([
+            'name' => 'N/A',
+        ]);
     }
 
     public function department(): BelongsTo
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsTo(Department::class)->withDefault([
+            'name' => 'N/A',
+        ]);
     }
 
     public function designation(): BelongsTo
     {
-        return $this->belongsTo(Designation::class);
+        return $this->belongsTo(Designation::class)->withDefault([
+            'name' => 'N/A',
+        ]);
+    }
+
+    public function reportingManager(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reporting_manager_id')->withDefault([
+            'first_name' => 'N/A',
+            'last_name' => '',
+            'email' => 'N/A',
+            'profile_photo_path' => null,
+        ]);
     }
 }

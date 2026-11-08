@@ -14,7 +14,7 @@
 
     <div class="row align-items-end g-3">
         <div class="col-12 col-md-7">
-            <label for="user-deletion-password" class="form-label app-form-label">{{ __('Confirm with your password') }}</label>
+            <label for="user-deletion-password" class="form-label app-form-label">{{ __('Confirm with your password') }} <span class="text-danger">*</span></label>
             <input id="user-deletion-password" name="password" type="password" class="form-control app-form-control" placeholder="Enter your password to confirm" autocomplete="current-password" required>
             <x-input-error :messages="$errors->userDeletion->get('password')" class="app-form-error" />
         </div>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\CaseStudyController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EmployeeController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -77,5 +79,13 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::patch('/employee/{employee}/status', [EmployeeController::class, 'changeStatus'])->name('employee.status');
         Route::patch('/employee/{employee}/show-as-team', [EmployeeController::class, 'updateShowAsTeam'])->name('employee.show-as-team.update');
         Route::resource('employee', EmployeeController::class)->except(['show']);
+
+        // Testimonials
+        Route::patch('/testimonial/{testimonial}/status', [TestimonialController::class, 'changeStatus'])->name('testimonial.status');
+        Route::resource('testimonial', TestimonialController::class)->except(['show']);
+
+        // Case studies
+        Route::patch('/case-study/{case_study}/status', [CaseStudyController::class, 'changeStatus'])->name('case-study.status');
+        Route::resource('case-study', CaseStudyController::class)->except(['show']);
     });
 });

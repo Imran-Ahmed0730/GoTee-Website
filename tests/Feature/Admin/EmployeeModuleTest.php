@@ -47,13 +47,99 @@ class EmployeeModuleTest extends TestCase
             ->assertOk()
             ->assertSee('Employee 16')
             ->assertSee('page=2')
+            ->assertViewHas('items', fn ($items): bool => $items->first()->user->email === 'employee16@example.com')
             ->assertSee('href="'.route('admin.employee.index').'" class="admin-nav-link active"', false);
 
         $this->actingAs($user)
             ->get(route('admin.employee.index', ['page' => 2]))
             ->assertOk()
-            ->assertSee('Employee 1')
-            ->assertDontSee('Employee 16');
+            ->assertViewHas('items', fn ($items): bool => $items->first()->user->email === 'employee1@example.com');
+    }
+
+    public function test_employee_list_can_be_filtered_by_department_designation_manager_and_team_visibility(): void
+    {
+        Storage::fake('local');
+        $user = $this->userWithPermissions(['Employee View']);
+        $department = Department::create(['name' => 'Design']);
+        $otherDepartment = Department::create(['name' => 'Marketing']);
+        $designation = Designation::create(['name' => 'Designer']);
+        $otherDesignation = Designation::create(['name' => 'Manager']);
+        $manager = $this->createEmployeeRecord('Reporting Manager', 'manager@example.com');
+        $otherManager = $this->createEmployeeRecord('Other Manager', 'other-manager@example.com');
+        $manager->update(['show_as_team' => 1]);
+        $otherManager->update(['show_as_team' => 1]);
+
+        $matchingEmployee = $this->createEmployeeRecord('Matching Employee', 'matching@example.com');
+        $matchingEmployee->update([
+            'department_id' => $department->id,
+            'designation_id' => $designation->id,
+            'reporting_manager_id' => $manager->user_id,
+            'show_as_team' => 1,
+        ]);
+
+        $employees = [
+            'otherDepartment' => $this->createEmployeeRecord('Other Department Employee', 'other-department@example.com'),
+            'otherDesignation' => $this->createEmployeeRecord('Other Designation Employee', 'other-designation@example.com'),
+            'otherManager' => $this->createEmployeeRecord('Other Reporting Manager Employee', 'other-reporting-manager@example.com'),
+            'hiddenFromTeam' => $this->createEmployeeRecord('Hidden Team Employee', 'hidden-team@example.com'),
+        ];
+        $employees['otherDepartment']->update([
+            'department_id' => $otherDepartment->id,
+            'designation_id' => $designation->id,
+            'reporting_manager_id' => $manager->user_id,
+            'show_as_team' => 1,
+        ]);
+        $employees['otherDesignation']->update([
+            'department_id' => $department->id,
+            'designation_id' => $otherDesignation->id,
+            'reporting_manager_id' => $manager->user_id,
+            'show_as_team' => 1,
+        ]);
+        $employees['otherManager']->update([
+            'department_id' => $department->id,
+            'designation_id' => $designation->id,
+            'reporting_manager_id' => $otherManager->user_id,
+            'show_as_team' => 1,
+        ]);
+        $employees['hiddenFromTeam']->update([
+            'department_id' => $department->id,
+            'designation_id' => $designation->id,
+            'reporting_manager_id' => $manager->user_id,
+            'show_as_team' => 0,
+        ]);
+
+        $filters = [
+            'department_id' => $department->id,
+            'designation_id' => $designation->id,
+            'reporting_manager_id' => $manager->user_id,
+            'show_as_team' => 1,
+        ];
+
+        $this->actingAs($user)
+            ->get(route('admin.employee.index', $filters))
+            ->assertOk()
+            ->assertSee('name="department_id"', false)
+            ->assertSee('name="designation_id"', false)
+            ->assertSee('name="reporting_manager_id"', false)
+            ->assertSee('name="show_as_team"', false)
+            ->assertViewHas('items', fn ($items): bool => $items->total() === 1
+                && $items->first()->is($matchingEmployee));
+
+        foreach ([
+            ['department_id' => $otherDepartment->id, 'employee' => $employees['otherDepartment']],
+            ['designation_id' => $otherDesignation->id, 'employee' => $employees['otherDesignation']],
+            ['reporting_manager_id' => $otherManager->user_id, 'employee' => $employees['otherManager']],
+            ['show_as_team' => 0, 'employee' => $employees['hiddenFromTeam']],
+        ] as $filter) {
+            $employee = $filter['employee'];
+            unset($filter['employee']);
+
+            $this->actingAs($user)
+                ->get(route('admin.employee.index', $filter))
+                ->assertOk()
+                ->assertViewHas('items', fn ($items): bool => $items->total() === 1
+                    && $items->first()->is($employee));
+        }
     }
 
     public function test_employee_can_be_created_with_private_nid_image_and_relationships(): void
@@ -63,26 +149,36 @@ class EmployeeModuleTest extends TestCase
         $bloodGroup = BloodGroup::create(['name' => 'O+']);
         $department = Department::create(['name' => 'Design']);
         $designation = Designation::create(['name' => 'Designer']);
+        $manager = $this->createEmployeeRecord('Existing Manager', 'manager@example.com');
 
         $this->actingAs($user)
             ->post(route('admin.employee.store'), $this->employeeInput([
-                'name' => 'Avery Employee',
+                'first_name' => 'Avery',
+                'last_name' => 'Employee',
                 'email' => 'avery@example.com',
                 'blood_group_id' => $bloodGroup->id,
                 'department_id' => $department->id,
                 'designation_id' => $designation->id,
+                'reporting_manager_id' => $manager->user_id,
                 'gender' => 3,
                 'show_as_team' => 1,
+                'profile_photo_path' => UploadedFile::fake()->image('profile.png'),
                 'nid_image' => UploadedFile::fake()->image('nid.png'),
             ]))
             ->assertSessionHasNoErrors()
             ->assertRedirect(route('admin.employee.index'));
 
-        $employee = Employee::query()->with('user')->firstOrFail();
+        $employee = Employee::query()
+            ->with('user')
+            ->whereHas('user', fn ($query) => $query->where('email', 'avery@example.com'))
+            ->firstOrFail();
 
-        $this->assertSame('Avery Employee', $employee->user->name);
+        $this->assertSame('Avery', $employee->user->first_name);
+        $this->assertSame('Employee', $employee->user->last_name);
+        $this->assertSame('avery.2025', $employee->user->username);
         $this->assertSame('avery@example.com', $employee->user->email);
         $this->assertSame(2, $employee->user->role);
+        $this->assertSame(sprintf('2025%05d', $employee->user_id), $employee->employee_id);
         $this->assertStringStartsWith('uploads/employees/profile/', $employee->user->profile_photo_path);
         $this->assertFileExists(public_path($employee->user->profile_photo_path));
         $this->createdPublicImages[] = public_path($employee->user->profile_photo_path);
@@ -94,6 +190,7 @@ class EmployeeModuleTest extends TestCase
             'blood_group_id' => $bloodGroup->id,
             'department_id' => $department->id,
             'designation_id' => $designation->id,
+            'reporting_manager_id' => $manager->user_id,
             'nid_no' => 'ID-000123',
         ]);
         Storage::disk('local')->assertExists($employee->nid_image);
@@ -108,7 +205,8 @@ class EmployeeModuleTest extends TestCase
 
         $this->actingAs($user)
             ->patch(route('admin.employee.update', $employee), $this->employeeInput([
-                'name' => 'Updated Employee',
+                'first_name' => 'Updated',
+                'last_name' => 'Employee',
                 'email' => 'updated@example.com',
                 'nid_image' => null,
             ]))
@@ -117,7 +215,8 @@ class EmployeeModuleTest extends TestCase
 
         $employee->refresh()->load('user');
 
-        $this->assertSame('Updated Employee', $employee->user->name);
+        $this->assertSame('Updated', $employee->user->first_name);
+        $this->assertSame('Employee', $employee->user->last_name);
         $this->assertSame('updated@example.com', $employee->user->email);
         $this->assertSame($existingImage, $employee->nid_image);
         Storage::disk('local')->assertExists($existingImage);
@@ -138,7 +237,8 @@ class EmployeeModuleTest extends TestCase
 
         $this->actingAs($user)
             ->patch(route('admin.employee.update', $employee), $this->employeeInput([
-                'name' => 'Replace Employee',
+                'first_name' => 'Replace',
+                'last_name' => 'Employee',
                 'email' => 'replace@example.com',
                 'nid_no' => $employee->nid_no,
                 'profile_photo_path' => UploadedFile::fake()->image('replacement-profile.png'),
@@ -166,7 +266,8 @@ class EmployeeModuleTest extends TestCase
 
         $this->actingAs($user)
             ->patch(route('admin.employee.update', $employee), $this->employeeInput([
-                'name' => 'Replace Employee',
+                'first_name' => 'Replace',
+                'last_name' => 'Employee',
                 'email' => 'replace@example.com',
                 'nid_no' => $employee->nid_no,
                 'nid_image' => UploadedFile::fake()->image('replacement-nid.png'),
@@ -263,7 +364,8 @@ class EmployeeModuleTest extends TestCase
     private function createEmployeeRecord(string $name, string $email): Employee
     {
         $user = User::factory()->create([
-            'name' => $name,
+            'first_name' => explode(' ', $name, 2)[0],
+            'last_name' => explode(' ', $name, 2)[1] ?? null,
             'email' => $email,
             'role' => 2,
         ]);
@@ -272,8 +374,15 @@ class EmployeeModuleTest extends TestCase
 
         return Employee::create([
             'user_id' => $user->id,
+            'employee_id' => sprintf('2025%05d', $user->id),
+            'father_name' => 'Father',
+            'mother_name' => 'Mother',
+            'present_address' => '123 Example Street',
+            'permanent_address' => '123 Example Street',
+            'contacting_person_first_name' => 'Contact',
+            'contacting_person_phone' => '1234567890',
+            'contacting_person_relation' => 'Family',
             'phone' => '1234567890',
-            'address' => '123 Example Street',
             'gender' => 1,
             'nid_no' => 'ID-'.str_pad((string) $user->id, 6, '0', STR_PAD_LEFT),
             'nid_image' => $imagePath,
@@ -305,17 +414,24 @@ class EmployeeModuleTest extends TestCase
     private function employeeInput(array $overrides = []): array
     {
         return array_replace([
-            'name' => 'Employee Name',
+            'first_name' => 'Employee',
+            'last_name' => 'Name',
             'email' => 'employee@example.com',
+            'father_name' => 'Father',
+            'mother_name' => 'Mother',
+            'present_address' => '123 Example Street',
+            'permanent_address' => '123 Example Street',
+            'contacting_person_first_name' => 'Contact',
+            'contacting_person_phone' => '1234567890',
+            'contacting_person_relation' => 'Family',
             'phone' => '1234567890',
-            'address' => '123 Example Street',
             'gender' => 1,
             'blood_group_id' => null,
             'department_id' => null,
             'designation_id' => null,
             'nid_no' => 'ID-000123',
             'nid_image' => UploadedFile::fake()->image('nid.png'),
-            'profile_photo_path' => UploadedFile::fake()->image('profile.png'),
+            'profile_photo_path' => null,
             'joining_date' => '2025-01-01',
             'salary' => '50000.00',
             'status' => 1,

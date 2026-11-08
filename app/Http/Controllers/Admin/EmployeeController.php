@@ -32,13 +32,15 @@ class EmployeeController extends Controller implements HasMiddleware
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:100'],
             'status' => ['nullable', 'in:0,1'],
+            'department_id' => ['nullable', 'integer', 'exists:departments,id'],
+            'designation_id' => ['nullable', 'integer', 'exists:designations,id'],
+            'reporting_manager_id' => ['nullable', 'integer', 'exists:employees,user_id'],
+            'show_as_team' => ['nullable', 'in:0,1'],
         ]);
 
         return view('admin.employee.index', [
-            'items' => $this->employeeService->getAllEmployees(
-                $filters['search'] ?? null,
-                $filters['status'] ?? null,
-            ),
+            'items' => $this->employeeService->getAllEmployees($filters),
+            ...$this->employeeService->getFilterOptions(),
             'filters' => $filters,
         ]);
     }

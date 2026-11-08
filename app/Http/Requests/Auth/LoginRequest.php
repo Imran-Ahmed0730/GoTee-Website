@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -42,7 +43,12 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))
+            || $this->isInactiveEmployee()) {
+            if (Auth::check()) {
+                Auth::logout();
+            }
+
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -51,6 +57,17 @@ class LoginRequest extends FormRequest
         }
 
         RateLimiter::clear($this->throttleKey());
+    }
+
+    private function isInactiveEmployee(): bool
+    {
+        $user = Auth::user();
+        $employee = $user instanceof User ? $user->employee : null;
+
+        return $user instanceof User
+            && (int) $user->role === 2
+            && $employee !== null
+            && (int) $employee->getRawOriginal('status') === 0;
     }
 
     /**

@@ -22,7 +22,7 @@
                 <x-dropdown>
                     <x-slot name="trigger">
                         <button type="button" class="nav-link dropdown-toggle" aria-expanded="false">
-                            {{ Auth::user()->name }}
+                            {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
                         </button>
                     </x-slot>
 

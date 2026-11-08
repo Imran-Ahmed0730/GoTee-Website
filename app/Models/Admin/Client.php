@@ -4,6 +4,7 @@ namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Client extends Model
 {
@@ -14,5 +15,10 @@ class Client extends Model
         return Attribute::make(
             get: static fn ($value): string => (int) $value === 1 ? 'Active' : 'Inactive',
         );
+    }
+
+    public function caseStudies(): HasMany
+    {
+        return $this->hasMany(CaseStudy::class);
     }
 }
