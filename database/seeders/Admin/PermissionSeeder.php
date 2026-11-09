@@ -103,6 +103,25 @@ class PermissionSeeder extends Seeder
             'Settings Update',
             'Settings View',
 
+            // Solution categories
+            'Solution Category Add',
+            'Solution Category Delete',
+            'Solution Category Status Change',
+            'Solution Category Update',
+            'Solution Category View',
+
+            // Pages
+            'Page Add',
+            'Page Delete',
+            'Page Status Change',
+            'Page Update',
+            'Page View',
+
+            // Lead submissions
+            'Contact View',
+            'Demo Request View',
+            'Subscribe View',
+
             // Staff
             'Staff Create',
             'Staff Delete',

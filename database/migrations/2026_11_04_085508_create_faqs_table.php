@@ -18,6 +18,10 @@ return new class extends Migration
             $table->text('answer');
             $table->tinyInteger('status')->default(0)->comment('0=>Hidden,1=>Visible');
             $table->timestamps();
+            $table->index(['category_id', 'created_at'], 'faqs_category_created_at_index');
+            $table->index(['category_id', 'status', 'created_at'], 'faqs_category_status_created_at_index');
+            $table->index(['status', 'created_at'], 'faqs_status_created_at_index');
+            $table->index('created_at', 'faqs_created_at_index');
         });
     }
 

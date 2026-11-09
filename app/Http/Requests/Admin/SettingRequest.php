@@ -42,12 +42,14 @@ class SettingRequest extends FormRequest
             'contact' => [
                 'address' => ['required', 'string', 'max:1000'],
                 'email' => ['required', 'email', 'max:255'],
-                'phone' => ['required', 'string', 'max:50'],
+                'phone1' => ['required', 'string', 'max:50'],
+                'phone2' => ['nullable', 'string', 'max:50'],
                 'whatsapp' => ['required', 'string', 'max:50'],
                 'opening_time' => ['required', 'string', 'max:50'],
                 'closing_time' => ['required', 'string', 'max:50'],
                 'closed_on' => ['nullable', 'array'],
                 'closed_on.*' => ['string', Rule::in(['1', '2', '3', '4', '5', '6', '7'])],
+                'map_location' => ['required', 'string', 'max:1000']
             ],
             'social-media' => array_fill_keys(
                 ['facebook_url', 'x_url', 'instagram_url', 'linkedin_url', 'youtube_url'],

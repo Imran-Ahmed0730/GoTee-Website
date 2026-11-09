@@ -42,6 +42,11 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1)->comment('1=Active, 0=Inactive');
             $table->tinyInteger('show_as_team')->default(0)->comment('1=Show as team member, 0=Do not show');
             $table->timestamps();
+            $table->index(['status', 'id'], 'employees_status_id_index');
+            $table->index(['department_id', 'id'], 'employees_department_id_id_index');
+            $table->index(['designation_id', 'id'], 'employees_designation_id_id_index');
+            $table->index(['reporting_manager_id', 'id'], 'employees_reporting_manager_id_id_index');
+            $table->index(['show_as_team', 'id'], 'employees_show_as_team_id_index');
         });
     }
 

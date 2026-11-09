@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('dept_head_id')->nullable()->constrained('users')->onDelete('set null');
             $table->tinyInteger('status')->default(1)->comment('1=Active, 0=Inactive');
             $table->timestamps();
+            $table->index(['status', 'name'], 'departments_status_name_index');
         });
     }
 

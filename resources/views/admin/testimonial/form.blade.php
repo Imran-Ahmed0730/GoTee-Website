@@ -29,27 +29,27 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="client_name" class="form-label">Client / Company <span class="text-danger">*</span></label>
-                            <input id="client_name" name="client_name" type="text" value="{{ old('client_name', $item->client_name ?? '') }}" class="form-control @error('client_name') is-invalid @enderror" maxlength="255" required>
+                            <input id="client_name" name="client_name" type="text" value="{{ old('client_name', $item->client_name ?? '') }}" placeholder="Enter the client or company name" class="form-control @error('client_name') is-invalid @enderror" maxlength="255" required>
                             @error('client_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="designation" class="form-label">Designation <span class="text-danger">*</span></label>
-                            <input id="designation" name="designation" type="text" value="{{ old('designation', $item->designation ?? '') }}" class="form-control @error('designation') is-invalid @enderror" maxlength="255" required>
+                            <input id="designation" name="designation" type="text" value="{{ old('designation', $item->designation ?? '') }}" placeholder="Enter the designation" class="form-control @error('designation') is-invalid @enderror" maxlength="255" required>
                             @error('designation')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="first_name" class="form-label">First name <span class="text-danger">*</span></label>
-                            <input id="first_name" name="first_name" type="text" value="{{ old('first_name', $item->first_name ?? '') }}" class="form-control @error('first_name') is-invalid @enderror" maxlength="255" required>
+                            <input id="first_name" name="first_name" type="text" value="{{ old('first_name', $item->first_name ?? '') }}" placeholder="Enter the first name" class="form-control @error('first_name') is-invalid @enderror" maxlength="255" required>
                             @error('first_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="last_name" class="form-label">Last name</label>
-                            <input id="last_name" name="last_name" type="text" value="{{ old('last_name', $item->last_name ?? '') }}" class="form-control @error('last_name') is-invalid @enderror" maxlength="255">
+                            <input id="last_name" name="last_name" type="text" value="{{ old('last_name', $item->last_name ?? '') }}" placeholder="Enter the last name" class="form-control @error('last_name') is-invalid @enderror" maxlength="255">
                             @error('last_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="comment" class="form-label">Comment <span class="text-danger">*</span></label>
-                            <textarea id="comment" name="comment" rows="5" class="form-control @error('comment') is-invalid @enderror" maxlength="10000" required>{{ old('comment', $item->comment ?? '') }}</textarea>
+                            <textarea id="comment" name="comment" rows="5" placeholder="Enter the testimonial comment" class="form-control @error('comment') is-invalid @enderror" maxlength="10000" required>{{ old('comment', $item->comment ?? '') }}</textarea>
                             @error('comment')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6 mb-3">
@@ -77,7 +77,7 @@
                         <legend class="form-label">Visibility</legend>
                         <div class="form-check form-switch">
                             <input type="hidden" name="status" value="0">
-                            <input class="form-check-input" type="checkbox" role="switch" name="status" id="status" value="1" @checked((string) old('status', isset($item) ? (int) $item->getRawOriginal('status') : '0') === '1')>
+                            <input class="form-check-input" type="checkbox" role="switch" name="status" id="status" value="1" @checked((string) old('status', isset($item) ? (int) $item->getRawOriginal('status') : '1') === '1')>
                             <label class="form-check-label" for="status">Show testimonial</label>
                         </div>
                         @error('status')<div class="text-danger small mt-1">{{ $message }}</div>@enderror

@@ -23,12 +23,23 @@
                         @error('address')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="mb-3">
+                        <label for="map_location" class="form-label">Map Location <span class="text-danger">*</span></label>
+                        <textarea id="map_location" name="map_location" rows="2" placeholder="Enter map location" class="form-control @error('map_location') is-invalid @enderror" required>{{ old('map_location', $settings['map_location'] ?? '') }}</textarea>
+                        @error('address')<div class="invalid-feedback">{{ $message }}</div>@enderror
+
+                    </div>
+                    <div class="mb-3">
                         <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                         <input id="email" name="email" type="email" value="{{ old('email', $settings['email'] ?? '') }}" placeholder="name@example.com" class="form-control @error('email') is-invalid @enderror" required>
                         @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
+                        <input id="phone" name="phone" type="tel" value="{{ old('phone', $settings['phone'] ?? '') }}" placeholder="Enter a phone number" class="form-control @error('phone') is-invalid @enderror" required>
+                        @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone (secondary)</label>
                         <input id="phone" name="phone" type="tel" value="{{ old('phone', $settings['phone'] ?? '') }}" placeholder="Enter a phone number" class="form-control @error('phone') is-invalid @enderror" required>
                         @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>

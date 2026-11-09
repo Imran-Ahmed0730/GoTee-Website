@@ -74,6 +74,22 @@
             @endcan
         @endcanany
 
+        @canany(['Solution Category View', 'Page View'])
+            <div class="admin-nav-label mt-3">Solutions &amp; pages</div>
+            @can('Solution Category View')
+                <a href="{{ route('admin.solution-category.index') }}" class="admin-nav-link {{ request()->routeIs('admin.solution-category.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Solution categories</span>
+                </a>
+            @endcan
+            @can('Page View')
+                <a href="{{ route('admin.page.index') }}" class="admin-nav-link {{ request()->routeIs('admin.page.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Pages</span>
+                </a>
+            @endcan
+        @endcanany
+
         @canany(['Role View', 'Permission View'])
             <div class="admin-nav-label mt-3">Roles & Permissions</div>
             @can('Role View')
@@ -86,6 +102,28 @@
                 <a href="{{ route('admin.permission.index') }}" class="admin-nav-link {{ request()->routeIs('admin.permission.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-key" aria-hidden="true"></i>
                     <span class="admin-nav-text">Permissions</span>
+                </a>
+            @endcan
+        @endcanany
+
+        @canany(['Contact View', 'Demo Request View', 'Subscribe View'])
+            <div class="admin-nav-label mt-3">Lead submissions</div>
+            @can('Contact View')
+                <a href="{{ route('admin.contact.index') }}" class="admin-nav-link {{ request()->routeIs('admin.contact.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Contact requests</span>
+                </a>
+            @endcan
+            @can('Demo Request View')
+                <a href="{{ route('admin.demo-request.index') }}" class="admin-nav-link {{ request()->routeIs('admin.demo-request.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Demo requests</span>
+                </a>
+            @endcan
+            @can('Subscribe View')
+                <a href="{{ route('admin.subscribe.index') }}" class="admin-nav-link {{ request()->routeIs('admin.subscribe.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-at" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Subscribers</span>
                 </a>
             @endcan
         @endcanany

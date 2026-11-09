@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->tinyInteger('status')->default(0);
             $table->timestamps();
+            $table->index(['status', 'id'], 'testimonials_status_id_index');
         });
     }
 

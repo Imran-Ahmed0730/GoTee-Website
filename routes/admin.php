@@ -5,13 +5,18 @@ use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\CaseStudyController;
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DemoRequestController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\FaqCategoryController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\SolutionCategoryController;
+use App\Http\Controllers\Admin\SubscribeController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +30,19 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     Route::middleware('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Lead submissions
+        Route::get('/subscribe', [SubscribeController::class, 'index'])->name('subscribe.index');
+        Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+        Route::get('/demo-request', [DemoRequestController::class, 'index'])->name('demo-request.index');
+
+        // Solution and page content
+        Route::patch('/solution-category/{solutionCategory}/status', [SolutionCategoryController::class, 'changeStatus'])->name('solution-category.status');
+        Route::resource('solution-category', SolutionCategoryController::class)
+            ->except(['show'])
+            ->parameters(['solution-category' => 'solutionCategory']);
+        Route::patch('/page/{page}/status', [PageController::class, 'changeStatus'])->name('page.status');
+        Route::resource('page', PageController::class)->except(['show']);
 
         // Role module
         Route::resource('role', RoleController::class)->except(['show']);

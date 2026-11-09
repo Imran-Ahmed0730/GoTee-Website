@@ -16,13 +16,14 @@ return new class extends Migration
             $table->foreignId('client_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('testimonial_id')->nullable()->constrained()->nullOnDelete();
             $table->string('title')->index();
-            $table->string('industry')->index();
+            $table->string('industry');
             $table->string('location');
             $table->text('challenge');
             $table->text('solution');
             $table->text('results');
-            $table->tinyInteger('status')->default(0)->comment('1=> Active, 0=> Inactive')->index();
+            $table->tinyInteger('status')->default(0)->comment('1=> Active, 0=> Inactive');
             $table->timestamps();
+            $table->index(['status', 'title'], 'case_studies_status_title_index');
         });
     }
 

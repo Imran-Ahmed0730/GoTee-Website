@@ -25,7 +25,8 @@ class SettingSeeder extends Seeder
             ['key' => 'linkedin_url', 'value' => ''],
             ['key' => 'meta_description', 'value' => 'This is a boiler template for GoTEE'],
             ['key' => 'opening_time', 'value' => '09:00 AM'],
-            ['key' => 'phone', 'value' => '0123456789'],
+            ['key' => 'phone1', 'value' => '0123456789'],
+            ['key' => 'phone2', 'value' => '0123456789'],
             ['key' => 'short_bio', 'value' => 'Building cutting edge technologies'],
             ['key' => 'site_dark_logo', 'value' => 'backend/assets/img/AdminLTEFullLogo.png'],
             ['key' => 'site_favicon', 'value' => 'backend/assets/img/AdminLTELogo.png'],
@@ -36,6 +37,7 @@ class SettingSeeder extends Seeder
             ['key' => 'whatsapp', 'value' => '0123456789'],
             ['key' => 'x_url', 'value' => ''],
             ['key' => 'youtube_url', 'value' => ''],
+            ['key' => 'map_location', 'value' => ''],
             // Add more key-value pairs here
         ];
 

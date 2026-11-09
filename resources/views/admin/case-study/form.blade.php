@@ -29,7 +29,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="title" class="form-label">Case study title <span class="text-danger">*</span></label>
-                            <input id="title" name="title" type="text" value="{{ old('title', $item->title ?? '') }}" class="form-control @error('title') is-invalid @enderror" maxlength="255" required>
+                            <input id="title" name="title" type="text" value="{{ old('title', $item->title ?? '') }}" placeholder="Enter a case study title" class="form-control @error('title') is-invalid @enderror" maxlength="255" required>
                             @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6 mb-3">
@@ -44,27 +44,27 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="industry" class="form-label">Industry <span class="text-danger">*</span></label>
-                            <input id="industry" name="industry" type="text" value="{{ old('industry', $item->industry ?? '') }}" class="form-control @error('industry') is-invalid @enderror" maxlength="255" required>
+                            <input id="industry" name="industry" type="text" value="{{ old('industry', $item->industry ?? '') }}" placeholder="Enter the industry" class="form-control @error('industry') is-invalid @enderror" maxlength="255" required>
                             @error('industry')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
-                            <input id="location" name="location" type="text" value="{{ old('location', $item->location ?? '') }}" class="form-control @error('location') is-invalid @enderror" maxlength="255" required>
+                            <input id="location" name="location" type="text" value="{{ old('location', $item->location ?? '') }}" placeholder="Enter the location" class="form-control @error('location') is-invalid @enderror" maxlength="255" required>
                             @error('location')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="challenge" class="form-label">Challenge <span class="text-danger">*</span></label>
-                            <textarea id="challenge" name="challenge" rows="4" class="form-control @error('challenge') is-invalid @enderror" maxlength="10000" required>{{ old('challenge', $item->challenge ?? '') }}</textarea>
+                            <textarea id="challenge" name="challenge" rows="4" placeholder="Describe the challenge" class="form-control @error('challenge') is-invalid @enderror" maxlength="10000" required>{{ old('challenge', $item->challenge ?? '') }}</textarea>
                             @error('challenge')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="solution" class="form-label">Solution <span class="text-danger">*</span></label>
-                            <textarea id="solution" name="solution" rows="4" class="form-control @error('solution') is-invalid @enderror" maxlength="10000" required>{{ old('solution', $item->solution ?? '') }}</textarea>
+                            <textarea id="solution" name="solution" rows="4" placeholder="Describe the solution" class="form-control @error('solution') is-invalid @enderror" maxlength="10000" required>{{ old('solution', $item->solution ?? '') }}</textarea>
                             @error('solution')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="results" class="form-label">Results / Metrics <span class="text-danger">*</span></label>
-                            <textarea id="results" name="results" rows="4" class="form-control @error('results') is-invalid @enderror" maxlength="10000" required>{{ old('results', $item->results ?? '') }}</textarea>
+                            <textarea id="results" name="results" rows="4" placeholder="Describe the results and metrics" class="form-control @error('results') is-invalid @enderror" maxlength="10000" required>{{ old('results', $item->results ?? '') }}</textarea>
                             @error('results')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6 mb-3">
@@ -85,7 +85,7 @@
                         <legend class="form-label">Visibility</legend>
                         <div class="form-check form-switch">
                             <input type="hidden" name="status" value="0">
-                            <input class="form-check-input" type="checkbox" role="switch" name="status" id="status" value="1" @checked((string) old('status', isset($item) ? (int) $item->getRawOriginal('status') : '0') === '1')>
+                            <input class="form-check-input" type="checkbox" role="switch" name="status" id="status" value="1" @checked((string) old('status', isset($item) ? (int) $item->getRawOriginal('status') : '1') === '1')>
                             <label class="form-check-label" for="status">Show case study</label>
                         </div>
                         @error('status')<div class="text-danger small mt-1">{{ $message }}</div>@enderror

@@ -22,6 +22,10 @@ return new class extends Migration
             $table->string('button_link')->nullable();
             $table->tinyInteger('status')->default(1)->comment('1=Active, 0=Inactive');
             $table->timestamps();
+            $table->index(['position', 'status', 'created_at'], 'banners_position_status_created_at_index');
+            $table->index(['position', 'created_at'], 'banners_position_created_at_index');
+            $table->index(['status', 'created_at'], 'banners_status_created_at_index');
+            $table->index('created_at', 'banners_created_at_index');
         });
     }
 

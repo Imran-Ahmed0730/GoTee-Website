@@ -224,7 +224,7 @@
                                     <legend class="form-label">Team visibility</legend>
                                     <div class="form-check form-switch">
                                         <input type="hidden" name="show_as_team" value="0">
-                                        <input class="form-check-input" type="checkbox" role="switch" name="show_as_team" id="show_as_team" value="1" @checked((string) old('show_as_team', isset($item) ? $item->getRawOriginal('show_as_team') : '0') === '1')>
+                                        <input class="form-check-input" type="checkbox" role="switch" name="show_as_team" id="show_as_team" value="1" @checked((string) old('show_as_team', isset($item) ? $item->getRawOriginal('show_as_team') : '1') === '1')>
                                         <label class="form-check-label" for="show_as_team">Show as a team member</label>
                                     </div>
                                     @error('show_as_team')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
