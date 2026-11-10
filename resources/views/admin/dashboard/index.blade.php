@@ -14,7 +14,7 @@
         <div class="admin-hero-content row align-items-center g-4">
             <div class="col-12 col-xl-7">
                 <div class="admin-hero-kicker mb-2">GoTee engineering console</div>
-                <h1 id="dashboard-title" class="display-6 fw-semibold mb-2">Good morning, {{ auth()->user()->name }}</h1>
+                <h1 id="dashboard-title" class="display-6 fw-semibold mb-2">Good morning, {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</h1>
                 <p class="admin-hero-copy mb-3">One view across the software, embedded hardware, IoT deployments, and production systems we build and support.</p>
                 <span class="admin-live-pill small"><span class="admin-live-dot"></span> Operations snapshot <span class="text-white-50">·</span> {{ now()->format('M j, Y') }}</span>
             </div>

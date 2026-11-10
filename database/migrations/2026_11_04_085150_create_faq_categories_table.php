@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('faq_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique()->index();
+            $table->string('name')->unique();
             $table->tinyInteger('status')->default(0)->comment('0=>Inactive,1=>Active');
             $table->timestamps();
+            $table->index('created_at');
         });
     }
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Admin\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
@@ -22,6 +23,7 @@ class DatabaseSeederTest extends TestCase
         $this->assertSame(1, $admin->role);
         $this->assertTrue($admin->hasRole($adminRole));
         $this->assertTrue($admin->can('Role Add'));
+        $this->assertDatabaseHas('settings', ['key' => 'site_name', 'value' => 'GoTEE']);
         $this->assertCount(Permission::query()->where('guard_name', 'web')->count(), $adminRole->permissions);
     }
 
@@ -29,10 +31,12 @@ class DatabaseSeederTest extends TestCase
     {
         $this->seed();
         $permissionCount = Permission::query()->count();
+        $settingCount = Setting::query()->count();
         $this->seed();
 
         $this->assertDatabaseCount('users', 1);
         $this->assertDatabaseCount('roles', 1);
         $this->assertDatabaseCount('permissions', $permissionCount);
+        $this->assertDatabaseCount('settings', $settingCount);
     }
 }

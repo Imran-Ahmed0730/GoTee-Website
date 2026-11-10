@@ -139,7 +139,7 @@ class RoleModuleTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('admin.role.assign.permission.submit'), [
             'id' => $role->id,
-            'permission' => [$permission->id],
+            'permission' => [(string) $permission->id],
         ]);
 
         $response

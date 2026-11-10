@@ -4,8 +4,14 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
         <div class="d-flex align-items-center gap-2 d-lg-none">
-            <span class="admin-mobile-brand">G</span>
-            <span class="fw-semibold">GoTee</span>
+            <span class="admin-mobile-brand">
+                @if ($logo && is_file(public_path($logo)))
+                    <img src="{{ asset($logo) }}" alt="{{ $business_name }}" class="img-fluid" style="max-height: 30px;">
+                @else
+                    {{ $firstLetter }}
+                @endif
+            </span>
+            <span class="fw-semibold">{{ $business_name }}</span>
         </div>
     </div>
 
@@ -18,13 +24,13 @@
         <div class="position-relative">
             <button type="button" class="admin-profile-trigger d-flex align-items-center gap-3 text-dark" aria-label="Open profile menu" aria-controls="admin-profile-menu" aria-expanded="false">
                 <span class="d-none d-sm-block text-end">
-                    <span class="d-block small fw-semibold">{{ auth()->user()->name }}</span>
+                    <span class="d-block small fw-semibold">{{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</span>
                     <span class="admin-muted admin-profile-role d-block">Administrator</span>
                 </span>
                 @if (auth()->user()->profile_photo_path)
-                    <img class="admin-avatar admin-avatar-photo" src="{{ Storage::disk('public')->url(auth()->user()->profile_photo_path) }}" alt="{{ auth()->user()->name }} profile photo">
+                    <img class="admin-avatar admin-avatar-photo" src="{{ Storage::disk('public')->url(auth()->user()->profile_photo_path) }}" alt="{{ auth()->user()->first_name }} {{ auth()->user()->last_name }} profile photo">
                 @else
-                    <span class="admin-avatar">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span>
+                    <span class="admin-avatar">{{ mb_strtoupper(mb_substr(auth()->user()->first_name, 0, 1)) }}</span>
                 @endif
             </button>
             <div id="admin-profile-menu" class="admin-profile-menu" hidden>

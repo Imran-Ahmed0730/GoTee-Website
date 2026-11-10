@@ -1,11 +1,41 @@
 <?php
 
+use App\Services\Admin\SettingService;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-function updateImagePath(UploadedFile $image, ?string $oldImage = null, string $folderName = 'website-image'): string
-{
+function updateImagePath(
+    UploadedFile $image,
+    ?string $oldImage = null,
+    string $folderName = 'website-image',
+    string $disk = 'public',
+): string {
+    if ($disk === 'local') {
+        $imagePath = $image->store(trim($folderName, '/'), $disk);
+
+        if ($imagePath === false) {
+            throw new RuntimeException('Unable to store the uploaded image.');
+        }
+
+        if ($oldImage !== null && $oldImage !== $imagePath) {
+            $storage = Storage::disk($disk);
+
+            if ($storage->exists($oldImage) && ! $storage->delete($oldImage)) {
+                $storage->delete($imagePath);
+
+                throw new RuntimeException('Unable to remove the previous image.');
+            }
+        }
+
+        return $imagePath;
+    }
+
+    if ($disk !== 'public') {
+        throw new InvalidArgumentException('Images may only be stored on the public or local disk.');
+    }
+
     $relativeDirectory = 'uploads/'.trim($folderName, '/').'/';
     $absoluteDirectory = public_path($relativeDirectory);
 
@@ -30,50 +60,57 @@ function updateImagePath(UploadedFile $image, ?string $oldImage = null, string $
     return $imagePath;
 }
 
-function overWriteEnvFile(string $key, $value): void
+function overWriteEnvFile(string $key, string|int|bool|null $value): bool
 {
     if (env('DEMO_MODE') === 'On') {
-        return; // Prevent changes in demo mode
+        return false;
     }
 
     $path = base_path('.env');
     if (! file_exists($path)) {
-        return;
+        throw new RuntimeException('Unable to update settings because the environment file does not exist.');
     }
 
-    // 🔎 Normalize the value
-    if (is_bool($value) || strtolower((string) $value) === 'true' || strtolower((string) $value) === 'false') {
-        $value = filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';
-    } elseif (is_null($value) || strtolower((string) $value) === 'null') {
-        $value = 'null';
-    } elseif (is_int($value) || ctype_digit((string) $value)) {
-        $value = (string) intval($value); // integer
-    } elseif (is_float($value) || preg_match('/^-?\d+\.\d+$/', (string) $value)) {
-        $value = (string) floatval($value); // float
+    if ($value === null) {
+        $serializedValue = 'null';
+    } elseif (is_bool($value)) {
+        $serializedValue = $value ? 'true' : 'false';
     } else {
-        $value = trim((string) $value);
-        // If value contains spaces or special characters → wrap in quotes
-        if (preg_match('/\s|=/', $value)) {
-            $value = '"'.$value.'"';
+        $stringValue = (string) $value;
+        if (preg_match('/[\r\n]/', $stringValue) === 1) {
+            throw new InvalidArgumentException('Environment values cannot contain line breaks.');
         }
+
+        $serializedValue = '"'.str_replace(['\\', '"', '$'], ['\\\\', '\\"', '\\$'], $stringValue).'"';
     }
 
-    // 🔄 Read existing .env into lines
     $env = file($path, FILE_IGNORE_NEW_LINES);
+    if ($env === false) {
+        throw new RuntimeException('Unable to read the environment file.');
+    }
+
     $keyFound = false;
 
     foreach ($env as &$line) {
-        if (strpos($line, $key.'=') === 0) {
-            $line = $key.'='.$value;
+        if (preg_match('/^\s*'.preg_quote($key, '/').'\s*=/', $line) === 1) {
+            $line = $key.'='.$serializedValue;
             $keyFound = true;
             break;
         }
     }
 
     if (! $keyFound) {
-        $env[] = $key.'='.$value;
+        $env[] = $key.'='.$serializedValue;
     }
 
-    // 💾 Save back
-    file_put_contents($path, implode(PHP_EOL, $env).PHP_EOL);
+    if (file_put_contents($path, implode(PHP_EOL, $env).PHP_EOL, LOCK_EX) === false) {
+        throw new RuntimeException('Unable to write the environment file.');
+    }
+
+    return true;
+}
+
+function getSetting(string $key): ?string
+{
+    return app(SettingService::class)->getSettings([$key])[$key] ?? null;
 }

@@ -50,7 +50,9 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch('/admin/profile', [
-                'name' => 'Test User',
+                'first_name' => 'Test',
+                'last_name' => 'User',
+                'username' => 'test.user',
                 'email' => 'test@example.com',
             ]);
 
@@ -61,7 +63,9 @@ class ProfileTest extends TestCase
 
         $user->refresh();
 
-        $this->assertSame('Test User', $user->name);
+        $this->assertSame('Test', $user->first_name);
+        $this->assertSame('User', $user->last_name);
+        $this->assertSame('test.user', $user->username);
         $this->assertSame('test@example.com', $user->email);
         $this->assertNull($user->email_verified_at);
     }
@@ -73,7 +77,9 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch('/admin/profile', [
-                'name' => 'Test User',
+                'first_name' => 'Test',
+                'last_name' => 'User',
+                'username' => $user->username,
                 'email' => $user->email,
             ]);
 
@@ -82,6 +88,31 @@ class ProfileTest extends TestCase
             ->assertRedirect('/admin/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
+    }
+
+    public function test_duplicate_username_cannot_be_used_in_profile(): void
+    {
+        $user = User::factory()->create();
+        $other = User::factory()->create();
+
+        $this->actingAs($user)->patch('/admin/profile', [
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'username' => $other->username,
+            'email' => $user->email,
+        ])->assertSessionHasErrors('username');
+
+        $this->assertNotSame($other->username, $user->refresh()->username);
+    }
+
+    public function test_generated_usernames_are_unique_for_the_same_first_name_and_year(): void
+    {
+        $this->travelTo(now()->setDate(2024, 1, 1));
+        $first = User::factory()->create(['first_name' => 'Jane']);
+        $second = User::factory()->create(['first_name' => 'Jane']);
+
+        $this->assertSame('jane.2024', $first->username);
+        $this->assertSame('jane.2024.1', $second->username);
     }
 
     public function test_user_can_upload_a_profile_photo_and_replace_the_existing_photo(): void
@@ -95,7 +126,9 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch('/admin/profile', [
-                'name' => $user->name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'username' => $user->username,
                 'email' => $user->email,
                 'profile_photo' => UploadedFile::fake()->createWithContent(
                     'new-photo.png',
@@ -125,7 +158,9 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch('/admin/profile', [
-                'name' => $user->name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'username' => $user->username,
                 'email' => $user->email,
                 'remove_profile_photo' => '1',
             ]);
@@ -150,7 +185,9 @@ class ProfileTest extends TestCase
             ->actingAs($user)
             ->from('/admin/profile')
             ->patch('/admin/profile', [
-                'name' => $user->name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'username' => $user->username,
                 'email' => $user->email,
                 'profile_photo' => UploadedFile::fake()->create('not-an-image.txt', 10, 'text/plain'),
             ]);

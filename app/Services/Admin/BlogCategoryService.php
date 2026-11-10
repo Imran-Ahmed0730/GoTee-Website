@@ -5,8 +5,6 @@ namespace App\Services\Admin;
 use App\Models\Admin\BlogCategory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use Throwable;
 
@@ -25,24 +23,22 @@ class BlogCategoryService
      */
     public function createCategory(array $data): BlogCategory
     {
-        $storedFiles = [];
-        $storedIcons = [];
+        $storedImages = [];
 
         try {
             if (($data['icon'] ?? null) instanceof UploadedFile) {
-                $data['icon'] = updateImagePath($data['icon'], null, 'blog-categories/icons');
-                $storedIcons[] = $data['icon'];
+                $data['icon'] = updateImagePath($data['icon'], null, 'blog/categories/icons');
+                $storedImages[] = $data['icon'];
             }
 
             if (($data['cover_photo'] ?? null) instanceof UploadedFile) {
-                $data['cover_photo'] = $this->storeImage($data['cover_photo']);
-                $storedFiles[] = $data['cover_photo'];
+                $data['cover_photo'] = updateImagePath($data['cover_photo'], null, 'blog/categories/covers');
+                $storedImages[] = $data['cover_photo'];
             }
 
             return BlogCategory::create($data);
         } catch (Throwable $exception) {
-            $this->deleteStoredFiles($storedFiles);
-            $this->deleteImages($storedIcons);
+            $this->deleteImages($storedImages);
 
             throw $exception;
         }
@@ -53,37 +49,30 @@ class BlogCategoryService
      */
     public function updateCategory(BlogCategory $category, array $data): BlogCategory
     {
-        $oldIcon = $category->icon;
-        $oldCoverPhoto = $category->cover_photo;
-        $storedFiles = [];
-        $storedIcons = [];
+        $oldImages = [];
+        $storedImages = [];
 
         try {
             if (($data['icon'] ?? null) instanceof UploadedFile) {
-                $data['icon'] = updateImagePath($data['icon'], null, 'blog-categories/icons');
-                $storedIcons[] = $data['icon'];
+                $oldImages[] = $category->icon;
+                $data['icon'] = updateImagePath($data['icon'], null, 'blog/categories/icons');
+                $storedImages[] = $data['icon'];
             }
 
             if (($data['cover_photo'] ?? null) instanceof UploadedFile) {
-                $data['cover_photo'] = $this->storeImage($data['cover_photo']);
-                $storedFiles[] = $data['cover_photo'];
+                $oldImages[] = $category->cover_photo;
+                $data['cover_photo'] = updateImagePath($data['cover_photo'], null, 'blog/categories/covers');
+                $storedImages[] = $data['cover_photo'];
             }
 
             $category->update($data);
         } catch (Throwable $exception) {
-            $this->deleteStoredFiles($storedFiles);
-            $this->deleteImages($storedIcons);
+            $this->deleteImages($storedImages);
 
             throw $exception;
         }
 
-        if ($oldCoverPhoto !== $category->cover_photo) {
-            $this->deleteStoredFiles([$oldCoverPhoto]);
-        }
-
-        if ($oldIcon !== $category->icon) {
-            $this->deleteImage($oldIcon);
-        }
+        $this->deleteImages($oldImages);
 
         return $category;
     }
@@ -94,12 +83,12 @@ class BlogCategoryService
             ->get(['thumbnail', 'cover_photo'])
             ->flatMap(fn ($blog): array => [$blog->thumbnail, $blog->cover_photo])
             ->push($category->cover_photo)
+            ->push($category->icon)
             ->all();
 
         $category->delete();
 
-        $this->deleteStoredFiles($blogImages);
-        $this->deleteImage($category->icon);
+        $this->deleteImages($blogImages);
     }
 
     public function changeStatus(BlogCategory $category): bool
@@ -107,35 +96,10 @@ class BlogCategoryService
         return $category->update(['status' => ! $category->status]);
     }
 
-    private function storeImage(UploadedFile $image): string
-    {
-        $path = $image->store('blog-categories', 'public');
-
-        if (! is_string($path)) {
-            throw new RuntimeException('Unable to store the blog category cover photo.');
-        }
-
-        return $path;
-    }
-
-    /**
-     * @param  array<int, string|null>  $paths
-     */
-    private function deleteStoredFiles(array $paths): void
-    {
-        $disk = Storage::disk('public');
-
-        foreach (array_filter($paths) as $path) {
-            if ($disk->exists($path) && ! $disk->delete($path)) {
-                throw new RuntimeException('Unable to remove a stored blog image.');
-            }
-        }
-    }
-
     private function deleteImage(?string $path): void
     {
-        if ($path !== null && File::exists(public_path($path)) && ! File::delete(public_path($path))) {
-            throw new RuntimeException('Unable to remove the blog category icon.');
+        if ($path !== null && is_file(public_path($path)) && ! unlink(public_path($path))) {
+            throw new RuntimeException('Unable to remove a blog category image.');
         }
     }
 

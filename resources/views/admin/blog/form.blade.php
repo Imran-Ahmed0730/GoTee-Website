@@ -1,5 +1,9 @@
 @extends('admin.master')
 @section('title', isset($item) ? 'Edit blog' : 'Create blog')
+@push('css')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs5.css" integrity="sha512-WpRCKdt0qii+bQN3PAOsKoj34HaDb9jfYXIyFGPOYyY3AMWKAtkZmr49dj6dCAfQYUk8Ye4O8vl3SqxC904+BQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+@endpush
+
 @section('content')
     <nav class="site-breadcrumb-nav" aria-label="Breadcrumb">
         <ol class="breadcrumb site-breadcrumb">
@@ -41,27 +45,31 @@
 
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea id="description" name="description" rows="6" placeholder="Write the blog content or summary" class="form-control @error('description') is-invalid @enderror">{{ old('description', $item->description ?? '') }}</textarea>
+                        <textarea id="description" name="description" rows="6" placeholder="Write the blog content or summary" class="form-control summernote @error('description') is-invalid @enderror">{{ old('description', $item->description ?? '') }}</textarea>
                         @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
                     <div class="mb-3">
-                        <label for="thumbnail" class="form-label">Thumbnail {{ isset($item) ? '' : '*' }}</label>
-                        <input id="thumbnail" name="thumbnail" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="form-control @error('thumbnail') is-invalid @enderror" @required(!isset($item))>
+                        <label for="thumbnail" class="form-label">Thumbnail <span class="text-danger">{{ isset($item) ? '' : '*' }}</span></label>
+                        <input id="thumbnail" name="thumbnail" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="image-input form-control @error('thumbnail') is-invalid @enderror" @required(!isset($item))>
                         <div class="form-text">JPG, PNG, or WebP; maximum 5 MB.</div>
                         @error('thumbnail')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        @if (!empty($item?->thumbnail))
-                            <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($item->thumbnail) }}" alt="{{ $item->title }} thumbnail" class="img-thumbnail mt-3" style="max-width: 240px; max-height: 160px;">
+                        @if (!empty($item?->thumbnail) && file_exists($item->thumbnail))
+                            <img src="{{ asset($item->thumbnail) }}" alt="{{ $item->title }} thumbnail" class="img-thumbnail mt-3" id="preview-thumbnail" style="max-width: 240px; max-height: 160px;">
+                        @else
+                            <img src="{{ asset('images/blog-category-placeholder.svg') }}" alt="thumbnail" class="img-thumbnail mt-3" id="preview-thumbnail" style="max-width: 240px; max-height: 160px;">
                         @endif
                     </div>
 
                     <div class="mb-3">
                         <label for="cover_photo" class="form-label">Cover photo</label>
-                        <input id="cover_photo" name="cover_photo" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="form-control @error('cover_photo') is-invalid @enderror">
+                        <input id="cover_photo" name="cover_photo" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="image-input form-control @error('cover_photo') is-invalid @enderror">
                         <div class="form-text">JPG, PNG, or WebP; maximum 5 MB.</div>
                         @error('cover_photo')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        @if (!empty($item?->cover_photo))
-                            <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($item->cover_photo) }}" alt="{{ $item->title }} cover" class="img-thumbnail mt-3" style="max-width: 320px; max-height: 180px;">
+                        @if (!empty($item?->cover_photo) && file_exists($item->cover_photo))
+                            <img src="{{ asset($item->cover_photo) }}" alt="{{ $item->title }} cover"  class="img-thumbnail mt-3" id="preview-cover_photo" style="max-width: 320px; max-height: 180px;">
+                        @else
+                            <img src="{{ asset('images/blog-category-placeholder.svg') }}" alt=" cover" class="img-thumbnail mt-3" id="preview-cover_photo" style="max-width: 320px; max-height: 180px;">
                         @endif
                     </div>
 
@@ -84,3 +92,27 @@
         </div>
     </section>
 @endsection
+@push('js')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-bs5.min.js" integrity="sha512-qTQLA91yGDLA06GBOdbT7nsrQY8tN6pJqjT16iTuk08RWbfYmUz/pQD3Gly1syoINyCFNsJh7A91LtrLIwODnw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    <script>
+        $(document).ready(function() {
+            $('.summernote').summernote({
+                height: 300,
+            });
+            $('.image-input').on('change', function () {
+                const input = this;
+                const file = input.files[0];
+
+                if (!file) {
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.addEventListener('load', function (event) {
+                    $('#preview-' + input.id).attr('src', event.target.result);
+                });
+                reader.readAsDataURL(file);
+            });
+
+        });
+    </script>
+@endpush

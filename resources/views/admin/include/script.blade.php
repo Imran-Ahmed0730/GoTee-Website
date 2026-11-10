@@ -111,6 +111,13 @@
     const profileMenu = document.querySelector('#admin-profile-menu');
     const desktopSidebar = window.matchMedia('(min-width: 992px)');
 
+    function setSubmenuExpanded(toggle, expanded) {
+        const submenu = document.getElementById(toggle.getAttribute('aria-controls'));
+
+        toggle.setAttribute('aria-expanded', String(expanded));
+        submenu.hidden = !expanded;
+    }
+
     function setSidebarExpanded(expanded) {
         adminShell.classList.toggle('admin-sidebar-open', expanded);
         sidebarToggle.setAttribute('aria-expanded', String(expanded));
@@ -118,12 +125,9 @@
         sidebarBackdrop.hidden = !expanded || desktopSidebar.matches;
         sidebar.setAttribute('aria-hidden', String(!expanded && !desktopSidebar.matches));
 
-        if (!expanded) {
-            document.querySelectorAll('[data-submenu-toggle]').forEach((toggle) => {
-                toggle.setAttribute('aria-expanded', 'false');
-                document.getElementById(toggle.getAttribute('aria-controls')).hidden = true;
-            });
-        }
+        document.querySelectorAll('[data-submenu-toggle]').forEach((toggle) => {
+            setSubmenuExpanded(toggle, expanded && toggle.hasAttribute('data-submenu-active'));
+        });
     }
 
     sidebarToggle.addEventListener('click', () => {
@@ -136,11 +140,15 @@
         toggle.addEventListener('click', () => {
             if (!adminShell.classList.contains('admin-sidebar-open')) {
                 setSidebarExpanded(true);
+                if (!toggle.hasAttribute('data-submenu-active')) {
+                    setSubmenuExpanded(toggle, true);
+                }
+
+                return;
             }
 
             const expanded = toggle.getAttribute('aria-expanded') === 'true';
-            toggle.setAttribute('aria-expanded', String(!expanded));
-            document.getElementById(toggle.getAttribute('aria-controls')).hidden = expanded;
+            setSubmenuExpanded(toggle, !expanded);
         });
     });
 
@@ -175,6 +183,15 @@
 
     desktopSidebar.addEventListener('change', () => setSidebarExpanded(false));
     setSidebarExpanded(false);
+
+    let sidebarScrollTimeout;
+    sidebar.addEventListener('scroll', () => {
+        sidebar.classList.add('is-scrolling');
+        window.clearTimeout(sidebarScrollTimeout);
+        sidebarScrollTimeout = window.setTimeout(() => {
+            sidebar.classList.remove('is-scrolling');
+        }, 700);
+    }, { passive: true });
 </script>
 
 <script>

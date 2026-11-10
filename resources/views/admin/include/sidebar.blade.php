@@ -1,8 +1,8 @@
 <aside id="admin-sidebar" class="admin-sidebar flex-shrink-0" aria-label="Main navigation">
     <a href="{{ route('admin.dashboard') }}" class="admin-brand d-flex align-items-center gap-3 px-2 pb-2">
-        <span class="app-brand-mark">G</span>
+        <span class="app-brand-mark">{{ $firstLetter }}</span>
         <span class="admin-brand-copy">
-                <span class="d-block fs-5 fw-semibold">GoTee</span>
+                <span class="d-block fs-5 fw-semibold">{{$business_name}}</span>
         </span>
     </a>
 
@@ -43,6 +43,53 @@
             @endcan
         @endcanany
 
+        @canany(['Client View', 'Employee View'])
+            <div class="admin-nav-label mt-3">Team</div>
+            @can('Client View')
+                <a href="{{ route('admin.client.index') }}" class="admin-nav-link {{ request()->routeIs('admin.client.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-handshake" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Clients</span>
+                </a>
+            @endcan
+            @can('Employee View')
+                <a href="{{ route('admin.employee.index') }}" class="admin-nav-link {{ request()->routeIs('admin.employee.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-users" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Employees</span>
+                </a>
+            @endcan
+        @endcanany
+        @canany(['Testimonial View', 'Case Study View'])
+            <div class="admin-nav-label mt-3">Client stories</div>
+            @can('Testimonial View')
+                <a href="{{ route('admin.testimonial.index') }}" class="admin-nav-link {{ request()->routeIs('admin.testimonial.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-quote-left" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Testimonials</span>
+                </a>
+            @endcan
+            @can('Case Study View')
+                <a href="{{ route('admin.case-study.index') }}" class="admin-nav-link {{ request()->routeIs('admin.case-study.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Case studies</span>
+                </a>
+            @endcan
+        @endcanany
+
+        @canany(['Solution Category View', 'Page View'])
+            <div class="admin-nav-label mt-3">Solutions &amp; pages</div>
+            @can('Solution Category View')
+                <a href="{{ route('admin.solution-category.index') }}" class="admin-nav-link {{ request()->routeIs('admin.solution-category.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Solution categories</span>
+                </a>
+            @endcan
+            @can('Page View')
+                <a href="{{ route('admin.page.index') }}" class="admin-nav-link {{ request()->routeIs('admin.page.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Pages</span>
+                </a>
+            @endcan
+        @endcanany
+
         @canany(['Role View', 'Permission View'])
             <div class="admin-nav-label mt-3">Roles & Permissions</div>
             @can('Role View')
@@ -57,6 +104,56 @@
                     <span class="admin-nav-text">Permissions</span>
                 </a>
             @endcan
+        @endcanany
+
+        @canany(['Contact View', 'Demo Request View', 'Subscribe View'])
+            <div class="admin-nav-label mt-3">Lead submissions</div>
+            @can('Contact View')
+                <a href="{{ route('admin.contact.index') }}" class="admin-nav-link {{ request()->routeIs('admin.contact.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Contact requests</span>
+                </a>
+            @endcan
+            @can('Demo Request View')
+                <a href="{{ route('admin.demo-request.index') }}" class="admin-nav-link {{ request()->routeIs('admin.demo-request.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Demo requests</span>
+                </a>
+            @endcan
+            @can('Subscribe View')
+                <a href="{{ route('admin.subscribe.index') }}" class="admin-nav-link {{ request()->routeIs('admin.subscribe.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-at" aria-hidden="true"></i>
+                    <span class="admin-nav-text">Subscribers</span>
+                </a>
+            @endcan
+        @endcanany
+
+        @canany(['Settings View', 'Settings Site', 'Settings Logo & Favicon', 'Settings Contact', 'Settings Social Media', 'Settings Smtp'])
+            <button type="button" class="admin-nav-link admin-submenu-toggle {{ request()->routeIs('admin.setting.*') ? 'active' : '' }}" aria-label="Settings submenu" title="Settings" aria-expanded="false" aria-controls="settings-submenu" data-submenu-toggle {{ request()->routeIs('admin.setting.*') ? 'data-submenu-active=true' : '' }}>
+                <i class="fa-solid fa-gear" aria-hidden="true"></i>
+                <span class="admin-nav-text">Settings</span>
+                <svg class="admin-submenu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+            </button>
+            <div id="settings-submenu" class="admin-submenu" hidden>
+                @can('Settings View')
+                    <a class="admin-submenu-link {{ request()->routeIs('admin.setting.index') ? 'active' : '' }}" href="{{ route('admin.setting.index') }}">Settings overview</a>
+                @endcan
+                @can('Settings Site')
+                    <a class="admin-submenu-link {{ request()->route('section') === 'general' ? 'active' : '' }}" href="{{ route('admin.setting.edit', 'general') }}">General</a>
+                @endcan
+                @can('Settings Logo & Favicon')
+                    <a class="admin-submenu-link {{ request()->route('section') === 'logos-favicon' ? 'active' : '' }}" href="{{ route('admin.setting.edit', 'logos-favicon') }}">Logo & favicon</a>
+                @endcan
+                @can('Settings Contact')
+                    <a class="admin-submenu-link {{ request()->route('section') === 'contact' ? 'active' : '' }}" href="{{ route('admin.setting.edit', 'contact') }}">Contact</a>
+                @endcan
+                @can('Settings Social Media')
+                    <a class="admin-submenu-link {{ request()->route('section') === 'social-media' ? 'active' : '' }}" href="{{ route('admin.setting.edit', 'social-media') }}">Social media</a>
+                @endcan
+                @can('Settings Smtp')
+                    <a class="admin-submenu-link {{ request()->route('section') === 'smtp' ? 'active' : '' }}" href="{{ route('admin.setting.edit', 'smtp') }}">SMTP</a>
+                @endcan
+            </div>
         @endcanany
 
 
@@ -77,15 +174,6 @@
         <div id="projects-submenu" class="admin-submenu" hidden>
             <a class="admin-submenu-link" href="#delivery-tracker-title">In delivery</a>
             <a class="admin-submenu-link" href="#delivery-tracker-title">Upcoming milestones</a>
-        </div>
-        <button type="button" class="admin-nav-link admin-submenu-toggle" aria-label="Clients submenu" title="Clients" aria-expanded="false" aria-controls="clients-submenu" data-submenu-toggle>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M3 20v-1.5A4.5 4.5 0 0 1 7.5 14h3a4.5 4.5 0 0 1 4.5 4.5V20M16 4.8a3.5 3.5 0 0 1 0 6.4m2 3a4.5 4.5 0 0 1 3 4.3V20"/></svg>
-                <span class="admin-nav-text">Clients</span>
-                <svg class="admin-submenu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
-        </button>
-        <div id="clients-submenu" class="admin-submenu" hidden>
-            <a class="admin-submenu-link" href="#connected-fleet-title">Client deployments</a>
-            <a class="admin-submenu-link" href="#connected-fleet-title">Connected devices</a>
         </div>
         <button type="button" class="admin-nav-link admin-submenu-toggle" aria-label="Project reports submenu" title="Project reports" aria-expanded="false" aria-controls="reports-submenu" data-submenu-toggle>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 19V9m5 10V5m5 14v-7m5 7V3"/></svg>
@@ -119,12 +207,4 @@
                 <a class="admin-submenu-link" href="#connected-fleet-title">System monitoring</a>
             </div>
     </nav>
-
-    <div class="admin-sidebar-note mt-auto">
-        <div class="d-flex align-items-center gap-2 small fw-medium text-white">
-            <span class="admin-sidebar-status-dot rounded-circle"></span>
-            Systems are looking good
-        </div>
-        <p class="mb-0 mt-2 small">Your connected systems and active projects are on track.</p>
-    </div>
 </aside>

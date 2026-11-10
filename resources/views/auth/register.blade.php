@@ -11,9 +11,15 @@
         @csrf
 
         <div class="mb-3">
-            <label for="name" class="form-label app-form-label auth-label">{{ __('Name') }}</label>
-            <input id="name" class="form-control app-form-control auth-input" type="text" name="name" value="{{ old('name') }}" placeholder="Enter your name" required autofocus autocomplete="name">
-            <x-input-error :messages="$errors->get('name')" class="app-form-error auth-errors" />
+            <label for="first_name" class="form-label app-form-label auth-label">{{ __('First name') }}</label>
+            <input id="first_name" class="form-control app-form-control auth-input" type="text" name="first_name" value="{{ old('first_name') }}" placeholder="Enter your first name" required autofocus autocomplete="given-name">
+            <x-input-error :messages="$errors->get('first_name')" class="app-form-error auth-errors" />
+        </div>
+
+        <div class="mb-3">
+            <label for="last_name" class="form-label app-form-label auth-label">{{ __('Last name') }}</label>
+            <input id="last_name" class="form-control app-form-control auth-input" type="text" name="last_name" value="{{ old('last_name') }}" placeholder="Enter your last name" required autocomplete="family-name">
+            <x-input-error :messages="$errors->get('last_name')" class="app-form-error auth-errors" />
         </div>
 
         <div class="mb-3">

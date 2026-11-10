@@ -56,9 +56,9 @@ a {
     color: var(--bs-link-color);
 }
 
-a:hover {
-    color: var(--bs-link-hover-color);
-}
+/*a:hover:not(.admin-brand, .admin-brand-copy, .admin-brand-mark) {*/
+/*    color: var(--bs-link-hover-color);*/
+/*}*/
 
 .btn-primary {
     --bs-btn-bg: var(--app-navy);

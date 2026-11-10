@@ -16,7 +16,8 @@ class AdminSeeder extends Seeder
         $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
-                'name' => 'Admin',
+                'first_name' => 'Admin',
+                'username' => 'admin'.date('Y'),
                 'password' => Hash::make('password'),
                 'role' => 1,
             ],

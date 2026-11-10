@@ -13,7 +13,14 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-             //Blog Category
+            // Banner
+            'Banner Add',
+            'Banner Delete',
+            'Banner Status Change',
+            'Banner Update',
+            'Banner View',
+
+            // Blog Category
             'Blog Category Add',
             'Blog Category Delete',
             'Blog Category Status Change',
@@ -43,6 +50,34 @@ class PermissionSeeder extends Seeder
             'FAQ Update',
             'FAQ View',
 
+            // Client
+            'Client Add',
+            'Client Delete',
+            'Client Status Change',
+            'Client Update',
+            'Client View',
+
+            // Testimonials
+            'Testimonial Add',
+            'Testimonial Delete',
+            'Testimonial Status Change',
+            'Testimonial Update',
+            'Testimonial View',
+
+            // Case Studies
+            'Case Study Add',
+            'Case Study Delete',
+            'Case Study Status Change',
+            'Case Study Update',
+            'Case Study View',
+
+            // Employee
+            'Employee Add',
+            'Employee Delete',
+            'Employee Status Change',
+            'Employee Update',
+            'Employee View',
+
             // Permission
             'Permission Add',
             'Permission Delete',
@@ -67,6 +102,25 @@ class PermissionSeeder extends Seeder
             'Settings Smtp',
             'Settings Update',
             'Settings View',
+
+            // Solution categories
+            'Solution Category Add',
+            'Solution Category Delete',
+            'Solution Category Status Change',
+            'Solution Category Update',
+            'Solution Category View',
+
+            // Pages
+            'Page Add',
+            'Page Delete',
+            'Page Status Change',
+            'Page Update',
+            'Page View',
+
+            // Lead submissions
+            'Contact View',
+            'Demo Request View',
+            'Subscribe View',
 
             // Staff
             'Staff Create',
